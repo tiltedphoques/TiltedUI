@@ -5,4 +5,5 @@ Build/projects
 Build/obj
 Build/lib
 Build/bin
+ThirdParty/CEF
 *__pycache__*
