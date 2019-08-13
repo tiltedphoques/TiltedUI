@@ -23,14 +23,14 @@ function CreateUIProject(basePath, coreBasePath)
             libdirs { basePath .. "/ThirdParty/CEF/lib/Win64" }
             
 
-        filter { "configurations:Release" }
+        filter { "configurations:not *Debug" }
             links 
             {
                 "libcef_r",
                 "libcef_dll_wrapper_r"
             }
         
-        filter { "configurations:Debug" }
+        filter { "configurations:*Debug" }
             links 
             {
                 "libcef_d",
