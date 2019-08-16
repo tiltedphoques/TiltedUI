@@ -2,19 +2,33 @@
 
 #include <OverlayRenderHandler.h>
 #include <Meta.h>
+#include <Signal.h>
+#include <wrl.h>
 
 struct IDirect3DTexture9;
 struct IDirect3DDevice9;
+struct ID3DXSprite;
 
 struct OverlayRenderHandlerD3D9 : OverlayRenderHandler
 {
-    explicit OverlayRenderHandlerD3D9(IDirect3DDevice9* apDevice) noexcept;
+    struct Renderer
+    {
+        virtual ~Renderer() = default;
+        [[nodiscard]] virtual IDirect3DDevice9* GetDevice() const noexcept = 0;
+
+        TP_NOCOPYMOVE(Renderer);
+        
+        Signal<void(IDirect3DDevice9*)> OnLost;
+        Signal<void(IDirect3DDevice9*)> OnRender;
+    };
+
+    explicit OverlayRenderHandlerD3D9(Renderer* apRenderer) noexcept;
     virtual ~OverlayRenderHandlerD3D9();
 
     TP_NOCOPYMOVE(OverlayRenderHandlerD3D9);
 
-    // Will be cast to LPD3DXSPRITE
-    void Render(void* apSprite) override;
+    void Render(IDirect3DDevice9*);
+    void Lost(IDirect3DDevice9*);
 
     void CreateResources() override;
 
@@ -26,6 +40,7 @@ struct OverlayRenderHandlerD3D9 : OverlayRenderHandler
 private:
     int m_width{ 0 };
     int m_height{ 0 };
-    IDirect3DTexture9* m_pTexture;
-    IDirect3DDevice9* m_pDevice;
+    Microsoft::WRL::ComPtr<IDirect3DTexture9> m_pTexture;
+    Microsoft::WRL::ComPtr<ID3DXSprite> m_pSprite;
+    Renderer* m_pRenderer;
 };

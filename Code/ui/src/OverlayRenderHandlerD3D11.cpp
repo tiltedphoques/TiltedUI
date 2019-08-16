@@ -2,32 +2,44 @@
 
 #include <DirectXColors.h>
 #include <SimpleMath.h>
+#include <CommonStates.h>
 
-OverlayRenderHandlerD3D11::OverlayRenderHandlerD3D11(IDXGISwapChain* apSwapChain) noexcept
-    : m_pSwapChain(apSwapChain)
+OverlayRenderHandlerD3D11::OverlayRenderHandlerD3D11(Renderer* apRenderer) noexcept
+    : m_pRenderer(apRenderer)
 {
-    
+    apRenderer->OnRender.Connect(std::bind(&OverlayRenderHandlerD3D11::Render, this, std::placeholders::_1));
+    apRenderer->OnLost.Connect(std::bind(&OverlayRenderHandlerD3D11::Lost, this, std::placeholders::_1));
 }
 
-OverlayRenderHandlerD3D11::~OverlayRenderHandlerD3D11()
-{
-    if (m_pTextureView)
-    {
-        m_pTextureView->Release();
-    }
+OverlayRenderHandlerD3D11::~OverlayRenderHandlerD3D11() = default;
 
-    if (m_pTexture)
+void OverlayRenderHandlerD3D11::Render(IDXGISwapChain* apSwapChain)
+{
+    Microsoft::WRL::ComPtr<ID3D11CommandList> pCommandList;
+    const auto result = m_pContext->FinishCommandList(FALSE, &pCommandList);
+
+    if (result == S_OK)
     {
-        m_pTexture->Release();
+        if (pCommandList)
+            m_pContext->ExecuteCommandList(pCommandList.Get(), TRUE);
+
+        std::unique_lock<std::recursive_mutex> _(m_textureLock);
+
+        m_pSpriteBatch->Begin(DirectX::SpriteSortMode_Deferred, m_pStates->NonPremultiplied());
+        m_pSpriteBatch->Draw(m_pTextureView.Get(), DirectX::SimpleMath::Vector2(0.f, 0.f), nullptr, DirectX::Colors::White, 0.f);
+        m_pSpriteBatch->End();
     }
 }
 
-void OverlayRenderHandlerD3D11::Render(void* apSprite)
+void OverlayRenderHandlerD3D11::Lost(IDXGISwapChain* apSwapChain)
 {
-    auto pSpriteBatch = static_cast<DirectX::SpriteBatch*>(apSprite);
+    CreateResources();
+}
 
+void OverlayRenderHandlerD3D11::CreateResources()
+{
     void* p;
-    m_pSwapChain->GetDevice(IID_ID3D11Device, &p);
+    m_pRenderer->GetSwapChain()->GetDevice(IID_ID3D11Device, &p);
     auto pDevice = static_cast<ID3D11Device*>(p);
 
     ID3D11DeviceContext* pContext = nullptr;
@@ -36,19 +48,70 @@ void OverlayRenderHandlerD3D11::Render(void* apSprite)
     if (!pContext)
         return;
 
-    ID3D11CommandList* pCommandList = nullptr;
-    const auto result = pContext->FinishCommandList(FALSE, &pCommandList);
+    m_pSpriteBatch = std::make_unique<DirectX::SpriteBatch>(pContext);
+    m_pStates = std::make_unique<DirectX::CommonStates>(pDevice);
 
-    if (result == S_OK)
+    std::unique_lock<std::recursive_mutex> _(m_textureLock);
+
+    m_pTexture.Reset();
+    m_pTextureView.Reset();
+
+    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRTV;
+
+    pContext->OMGetRenderTargets(1, &pRTV, nullptr);
+    if (pRTV)
     {
-        if (pCommandList)
-        {
-            pContext->ExecuteCommandList(pCommandList, TRUE);
-            pCommandList->Release();
-        }
+        Microsoft::WRL::ComPtr<ID3D11Resource> pSrcResource;
+        pRTV->GetResource(&pSrcResource);
 
-        std::unique_lock<std::recursive_mutex> _(m_textureLock);
-        pSpriteBatch->Draw(m_pTextureView.Get(), DirectX::SimpleMath::Vector2(0.f, 0.f), nullptr, DirectX::Colors::White, 0.f);
+        if (pSrcResource)
+        {
+            m_pContext.Reset();
+
+            if (FAILED(pDevice->CreateDeferredContext(0, &m_pContext)))
+                return;
+
+            Microsoft::WRL::ComPtr<ID3D11Texture2D> pSrcBuffer;
+            pSrcResource.As(&pSrcBuffer);
+
+            D3D11_TEXTURE2D_DESC desc;
+            pSrcBuffer->GetDesc(&desc);
+
+            m_width = desc.Width;
+            m_height = desc.Height;
+
+            D3D11_TEXTURE2D_DESC textDesc;
+            textDesc.Width = desc.Width;
+            textDesc.Height = desc.Height;
+            textDesc.MipLevels = textDesc.ArraySize = 1;
+            textDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+            textDesc.SampleDesc.Count = 1;
+            textDesc.SampleDesc.Quality = 0;
+            textDesc.Usage = D3D11_USAGE_DYNAMIC;
+            textDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+            textDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+            textDesc.MiscFlags = 0;
+
+            Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture;
+            const auto res = pDevice->CreateTexture2D(&textDesc, nullptr, &pTexture);
+
+            if (FAILED(res))
+                return;
+
+            D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
+            SRVDesc.Format = textDesc.Format;
+
+            SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+            SRVDesc.Texture2D.MipLevels = 1;
+
+            ID3D11ShaderResourceView* pTextureView;
+
+            if (FAILED(pDevice->CreateShaderResourceView(pTexture.Get(), &SRVDesc, &pTextureView)))
+                return;
+
+            m_pTexture = pTexture;
+            m_pTextureView = pTextureView;
+        }
     }
 }
 
@@ -64,16 +127,6 @@ void OverlayRenderHandlerD3D11::OnPaint(CefRefPtr<CefBrowser> browser, PaintElem
 {
     if (type == PET_VIEW)
     {
-        void* p;
-        m_pSwapChain->GetDevice(IID_ID3D11Device, &p);
-        auto pDevice = static_cast<ID3D11Device*>(p);
-
-        ID3D11DeviceContext* pContext = nullptr;
-        pDevice->GetImmediateContext(&pContext);
-
-        if (!pContext)
-            return;
-
         const auto oldWidth = m_width;
         const auto oldHeight = m_height;
 
@@ -95,14 +148,11 @@ void OverlayRenderHandlerD3D11::OnPaint(CefRefPtr<CefBrowser> browser, PaintElem
             CreateResources();
         }
 
-        ID3D11CommandList* pCommandList = nullptr;
-        if (SUCCEEDED(pContext->FinishCommandList(FALSE, &pCommandList)))
-        {
-            pCommandList->Release();
-        }
+        Microsoft::WRL::ComPtr<ID3D11CommandList> pCommandList;
+        m_pContext->FinishCommandList(FALSE, &pCommandList);
 
-        pContext->Map(m_pTexture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+        m_pContext->Map(m_pTexture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
         std::memcpy(mappedResource.pData, buffer, width * height * 4);
-        pContext->Unmap(m_pTexture.Get(), 0);
+        m_pContext->Unmap(m_pTexture.Get(), 0);
     }
 }

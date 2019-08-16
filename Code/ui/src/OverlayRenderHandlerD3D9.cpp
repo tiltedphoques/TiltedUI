@@ -2,46 +2,48 @@
 #include <d3d9.h>
 #include <d3dx9tex.h>
 
-OverlayRenderHandlerD3D9::OverlayRenderHandlerD3D9(IDirect3DDevice9* apDevice) noexcept
-    : m_pTexture(nullptr)
-    , m_pDevice(apDevice)
+OverlayRenderHandlerD3D9::OverlayRenderHandlerD3D9(Renderer* apRenderer) noexcept
+    : m_pRenderer(apRenderer)
 {
-    
+    apRenderer->OnRender.Connect(std::bind(&OverlayRenderHandlerD3D9::Render, this, std::placeholders::_1));
+    apRenderer->OnLost.Connect(std::bind(&OverlayRenderHandlerD3D9::Lost, this, std::placeholders::_1));
 }
 
-OverlayRenderHandlerD3D9::~OverlayRenderHandlerD3D9()
-{
-    if (m_pTexture)
-        m_pTexture->Release();
-}
+OverlayRenderHandlerD3D9::~OverlayRenderHandlerD3D9() = default;
 
-void OverlayRenderHandlerD3D9::Render(void* apSprite)
+void OverlayRenderHandlerD3D9::Render(IDirect3DDevice9* apDevice)
 {
-    auto pSprint = static_cast<LPD3DXSPRITE>(apSprite);
-
     D3DXVECTOR3 pos;
     pos.x = 0.0f;
     pos.y = 0.0f;
     pos.z = 0.0f;
 
-    pSprint->Draw(m_pTexture, nullptr, nullptr, &pos, 0xFFFFFFFF);
+    m_pSprite->Begin(D3DXSPRITE_ALPHABLEND);
+    m_pSprite->Draw(m_pTexture.Get(), nullptr, nullptr, &pos, 0xFFFFFFFF);
+    m_pSprite->End();
+}
 
+void OverlayRenderHandlerD3D9::Lost(IDirect3DDevice9* apDevice)
+{
+    CreateResources();
 }
 
 void OverlayRenderHandlerD3D9::CreateResources()
 {
-    if (m_pTexture)
-    {
-        m_pTexture->Release();
-    }
+    m_pTexture.Reset();
+    m_pSprite.Reset();
+
+    auto pDevice = m_pRenderer->GetDevice();
+
+    D3DXCreateSprite(pDevice, &m_pSprite);
 
     D3DVIEWPORT9 viewport;
-    m_pDevice->GetViewport(&viewport);
+    pDevice->GetViewport(&viewport);
 
     m_width = viewport.Width;
     m_height = viewport.Height;
 
-    if (D3DXCreateTexture(m_pDevice, viewport.Width, viewport.Height, 0, 0, D3DFMT_A8B8G8R8, D3DPOOL_MANAGED, &m_pTexture) != S_OK)
+    if (D3DXCreateTexture(pDevice, viewport.Width, viewport.Height, 0, 0, D3DFMT_A8B8G8R8, D3DPOOL_MANAGED, &m_pTexture) != S_OK)
     {
         // TODO: Error handling
     }

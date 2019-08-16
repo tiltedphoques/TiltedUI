@@ -4,5 +4,4 @@
 struct OverlayRenderHandler : CefRenderHandler
 {
     virtual void CreateResources() = 0;
-    virtual void Render(void* apSprite) = 0;
 };
