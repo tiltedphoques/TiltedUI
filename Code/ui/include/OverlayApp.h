@@ -1,20 +1,44 @@
 #pragma once
 
 #include <include/cef_app.h>
-#include <OverlayRenderProcessHandler.h>
+#include <OverlayBrowserProcessHandler.h>
+#include <OverlayClient.h>
 
-class OverlayApp : public CefApp
+#include <Meta.h>
+
+struct OverlayApp : CefApp
 {
-public:
+    struct RenderProvider
+    {
+        virtual ~RenderProvider() = default;
+        virtual OverlayRenderHandler* Create() = 0;
+        virtual HWND GetWindow() = 0;
+    };
 
-    OverlayApp();
-    ~OverlayApp() = default;
+    explicit OverlayApp(std::unique_ptr<RenderProvider> apRenderProvider, const std::wstring& acProcessName = L"tp_process.exe") noexcept;
+    virtual ~OverlayApp() = default;
 
-    CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override;
+    TP_NOCOPYMOVE(OverlayApp);
+
+    void Initialize() noexcept;
+    void ExecuteAsync(const std::string& acFunction, const CefRefPtr<CefListValue>& apArguments = nullptr) const noexcept;
+
+    [[nodiscard]] OverlayClient* GetGameClient() const noexcept { return m_pGameClient.get(); };
+
+    void InjectKey(cef_key_event_type_t aType, uint32_t aModifiers, uint16_t aKey, uint16_t aScanCode) noexcept;
+    void InjectMouseButton(uint16_t aX, uint16_t aY, cef_mouse_button_type_t aButton, bool aUp, uint32_t aModifier) noexcept;
+    void InjectMouseMove(uint16_t aX, uint16_t aY, uint32_t aModifier) noexcept;
+    void InjectMouseWheel(uint16_t aX, uint16_t aY, uint16_t aDelta, uint32_t aModifier) noexcept;
+
+    void OnBeforeCommandLineProcessing(const CefString& aProcessType, CefRefPtr<CefCommandLine> aCommandLine) override;
+
+    CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override { return m_pBrowserProcessHandler; }
 
     IMPLEMENT_REFCOUNTING(OverlayApp);
 
 private:
 
-    CefRefPtr<OverlayRenderProcessHandler> m_pRenderProcess;
+    CefRefPtr<OverlayBrowserProcessHandler> m_pBrowserProcessHandler;
+    CefRefPtr<OverlayClient> m_pGameClient;
+    std::unique_ptr<RenderProvider> m_pRenderProvider;
 };

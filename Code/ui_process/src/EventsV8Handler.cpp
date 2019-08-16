@@ -1,7 +1,7 @@
 #include <EventsV8Handler.h>
 
 
-EventsV8Handler::EventsV8Handler(CefRefPtr<CefV8Context> apContext) noexcept
+EventsV8Handler::EventsV8Handler(const CefRefPtr<CefV8Context> apContext) noexcept
     : m_pContext(apContext)
 {
 }
@@ -27,7 +27,7 @@ bool EventsV8Handler::Execute(const CefString& acName, CefRefPtr<CefV8Value> apO
     }
     else if (acName == "off")
     {
-        if (acArguments.size() < 1)
+        if (acArguments.empty())
         {
             aException = "Invalid number of arguments";
         }

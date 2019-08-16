@@ -14,12 +14,12 @@ CefRefPtr<CefRenderProcessHandler> OverlayApp::GetRenderProcessHandler()
 
 void ExitCheck(CefRefPtr<CefCommandLine> pArgs)
 {
+    const auto pid = pArgs->GetSwitchValue("pid");
+    const DWORD parentId = std::stoul(pid.c_str());
+
     Sleep(5000);
 
-    auto pid = pArgs->GetSwitchValue("pid");
-    DWORD parentId = std::stoul(pid.c_str());
-
-    auto hProcess = OpenProcess(SYNCHRONIZE | PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,
+    const auto hProcess = OpenProcess(SYNCHRONIZE | PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,
         FALSE, parentId);
 
     while (WaitForSingleObject(hProcess, INFINITE) == WAIT_TIMEOUT);
