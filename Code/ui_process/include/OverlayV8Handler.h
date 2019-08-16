@@ -2,11 +2,9 @@
 
 #include <include/cef_v8.h>
 
-class OverlayV8Handler : public CefV8Handler
+struct OverlayV8Handler final : CefV8Handler
 {
-public:
-
-    OverlayV8Handler(const CefRefPtr<CefBrowser>& apBrowser);
+    explicit OverlayV8Handler(const CefRefPtr<CefBrowser>& apBrowser) noexcept;
     ~OverlayV8Handler() = default;
 
     bool Execute(const CefString& acName, CefRefPtr<CefV8Value> apObject, const CefV8ValueList& acArguments, CefRefPtr<CefV8Value>& aReturnValue, CefString& aException) override;
@@ -15,7 +13,7 @@ public:
 
 private:
 
-    void Dispatch(const CefString& acName, const CefV8ValueList& acArguments) const;
+    void Dispatch(const CefString& acName, const CefV8ValueList& acArguments) const noexcept;
 
     static CefRefPtr<CefValue> ConvertValue(const CefRefPtr<CefV8Value>& acpValue);
 

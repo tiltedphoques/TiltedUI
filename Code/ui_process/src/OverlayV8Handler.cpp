@@ -1,7 +1,7 @@
 #include <OverlayV8Handler.h>
 #include <Platform.h>
 
-OverlayV8Handler::OverlayV8Handler(const CefRefPtr<CefBrowser>& apBrowser)
+OverlayV8Handler::OverlayV8Handler(const CefRefPtr<CefBrowser>& apBrowser) noexcept
     : m_pBrowser(apBrowser)
 {
 }
@@ -17,7 +17,7 @@ bool OverlayV8Handler::Execute(const CefString& acName, CefRefPtr<CefV8Value> ap
     return false;
 }
 
-void OverlayV8Handler::Dispatch(const CefString& acName, const CefV8ValueList& acArguments) const
+void OverlayV8Handler::Dispatch(const CefString& acName, const CefV8ValueList& acArguments) const noexcept
 {
     auto pMessage = CefProcessMessage::Create("ui-event");
 

@@ -1,7 +1,7 @@
 #include <OverlayRenderProcessHandler.h>
 #include <Platform.h>
 
-OverlayRenderProcessHandler::OverlayRenderProcessHandler(std::string aCoreObjectName /* = "core" */)
+OverlayRenderProcessHandler::OverlayRenderProcessHandler(std::string aCoreObjectName /* = "core" */) noexcept
     : m_coreObjectName(std::move(aCoreObjectName))
 {
 }

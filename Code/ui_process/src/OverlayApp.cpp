@@ -2,7 +2,7 @@
 
 #include <thread>
 
-OverlayApp::OverlayApp(std::function<OverlayRenderProcessHandler*()> aFactory)
+OverlayApp::OverlayApp(const std::function<OverlayRenderProcessHandler* ()>& aFactory) noexcept
     : m_pRenderProcess(aFactory())
 {
 }
@@ -27,7 +27,7 @@ void ExitCheck(CefRefPtr<CefCommandLine> pArgs)
     exit(0);
 }
 
-int TiltedUIMain(const char* acpArgs, HINSTANCE aInstance, std::function<OverlayRenderProcessHandler* ()> aFactory)
+int TiltedUIMain(const char* acpArgs, const HINSTANCE aInstance, const std::function<OverlayRenderProcessHandler* ()>& acFactory) noexcept
 {
     auto pArgs = CefCommandLine::CreateCommandLine();
     pArgs->InitFromString(acpArgs);
@@ -36,7 +36,7 @@ int TiltedUIMain(const char* acpArgs, HINSTANCE aInstance, std::function<Overlay
     t.detach();
 
     CefMainArgs main_args(aInstance);
-    CefRefPtr<OverlayApp> App = new OverlayApp(aFactory);
+    CefRefPtr<OverlayApp> App = new OverlayApp(acFactory);
 
-    return CefExecuteProcess(main_args, App, NULL);
+    return CefExecuteProcess(main_args, App, nullptr);
 }

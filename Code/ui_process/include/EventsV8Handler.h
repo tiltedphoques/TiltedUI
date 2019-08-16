@@ -1,28 +1,29 @@
 #pragma once
 
 #include <include/cef_v8.h>
+#include <Stl.h>
 
-#include <unordered_map>
-#include <algorithm>
+using TCallbacks = Map<std::string, std::pair<CefRefPtr<CefV8Context>, CefRefPtr<CefV8Value>>>;
 
-typedef std::unordered_map<std::string, std::pair<CefRefPtr<CefV8Context>, CefRefPtr<CefV8Value>>> callbacks_t;
-
-class EventsV8Handler : public CefV8Handler
+struct EventsV8Handler final : CefV8Handler
 {
-public:
-
-    EventsV8Handler(CefRefPtr<CefV8Context> apContext);
+    explicit EventsV8Handler(CefRefPtr<CefV8Context> apContext) noexcept;
     ~EventsV8Handler() = default;
+
+    EventsV8Handler(EventsV8Handler&&) = delete;
+    EventsV8Handler(const EventsV8Handler&) = delete;
+    EventsV8Handler& operator=(EventsV8Handler&&) = delete;
+    EventsV8Handler& operator=(const EventsV8Handler&) = delete;
 
     bool Execute(const CefString& acName, CefRefPtr<CefV8Value> apObject, const CefV8ValueList& acArguments, CefRefPtr<CefV8Value>& aReturnValue, CefString& aException) override;
 
-    const callbacks_t& GetCallbacks() const;
+    const TCallbacks& GetCallbacks() const noexcept;
 
     IMPLEMENT_REFCOUNTING(EventsV8Handler);
 
 private:
 
-    callbacks_t m_callbacks;
+    TCallbacks m_callbacks;
 
     CefRefPtr<CefV8Context> m_pContext;
 };

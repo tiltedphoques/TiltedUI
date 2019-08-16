@@ -1,7 +1,7 @@
 #include <EventsV8Handler.h>
 
 
-EventsV8Handler::EventsV8Handler(CefRefPtr<CefV8Context> apContext)
+EventsV8Handler::EventsV8Handler(CefRefPtr<CefV8Context> apContext) noexcept
     : m_pContext(apContext)
 {
 }
@@ -56,7 +56,7 @@ bool EventsV8Handler::Execute(const CefString& acName, CefRefPtr<CefV8Value> apO
     return false;
 }
 
-const callbacks_t& EventsV8Handler::GetCallbacks() const
+const TCallbacks& EventsV8Handler::GetCallbacks() const noexcept
 {
     return m_callbacks;
 }

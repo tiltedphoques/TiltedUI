@@ -4,11 +4,9 @@
 #include <OverlayRenderProcessHandler.h>
 #include <functional>
 
-class OverlayApp : public CefApp
+struct OverlayApp final : CefApp
 {
-public:
-
-    OverlayApp(std::function<OverlayRenderProcessHandler* ()> aFactory);
+    explicit OverlayApp(const std::function<OverlayRenderProcessHandler* ()>& aFactory) noexcept;
     ~OverlayApp() = default;
 
     CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override;
@@ -20,4 +18,4 @@ private:
     CefRefPtr<OverlayRenderProcessHandler> m_pRenderProcess;
 };
 
-int TiltedUIMain(const char* acpArgs, HINSTANCE aInstance, std::function<OverlayRenderProcessHandler* ()> aFactory);
+int TiltedUIMain(const char* acpArgs, HINSTANCE aInstance, const std::function<OverlayRenderProcessHandler* ()>& acFactory) noexcept;

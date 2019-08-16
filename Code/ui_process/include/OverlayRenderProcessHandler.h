@@ -7,16 +7,19 @@
 #include <OverlayV8Handler.h>
 #include <EventsV8Handler.h>
 
-class OverlayRenderProcessHandler : public CefRenderProcessHandler
+struct OverlayRenderProcessHandler : CefRenderProcessHandler
 {
-public:
-
-    OverlayRenderProcessHandler(std::string aCoreObjectName = "core");
+    explicit OverlayRenderProcessHandler(std::string aCoreObjectName = "core") noexcept;
     ~OverlayRenderProcessHandler() = default;
 
-    void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) override final;
+    OverlayRenderProcessHandler(OverlayRenderProcessHandler&&) = delete;
+    OverlayRenderProcessHandler(const OverlayRenderProcessHandler&) = delete;
 
-    void OnContextReleased(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) override final;
+    OverlayRenderProcessHandler& operator=(const OverlayRenderProcessHandler&) = delete;
+    OverlayRenderProcessHandler& operator=(OverlayRenderProcessHandler&&) = delete;
+
+    void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) override;
+    void OnContextReleased(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) override;
 
     bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
         CefRefPtr<CefFrame> frame,
@@ -26,11 +29,9 @@ public:
     void CreateEvent(const std::string& acEventName) const;
     void CreateFunction(const std::string& acFunctionName) const;
 
-    virtual void OnInitialize() = 0;
-
     IMPLEMENT_REFCOUNTING(OverlayRenderProcessHandler);
 
-private:
+protected:
 
     static CefRefPtr<CefV8Value> ConvertValue(const CefRefPtr<CefValue>& apValue);
 
