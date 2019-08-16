@@ -24,7 +24,9 @@ void OverlayRenderProcessHandler::OnContextReleased(CefRefPtr<CefBrowser> browse
     TP_UNUSED(browser);
     TP_UNUSED(frame);
 
-    context->GetGlobal()->DeleteValue("core");
+    context->GetGlobal()->DeleteValue(m_coreObjectName);
+
+    m_pCoreObject = nullptr;
 }
 
 bool OverlayRenderProcessHandler::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
