@@ -18,7 +18,7 @@ struct OverlayApp : CefApp
         TP_NOCOPYMOVE(RenderProvider);
     };
 
-    explicit OverlayApp(std::unique_ptr<RenderProvider> apRenderProvider, const std::wstring& acProcessName = L"tp_process.exe") noexcept;
+    explicit OverlayApp(std::unique_ptr<RenderProvider> apRenderProvider, std::wstring aProcessName = L"tp_process.exe") noexcept;
     virtual ~OverlayApp() = default;
 
     TP_NOCOPYMOVE(OverlayApp);
@@ -44,4 +44,5 @@ private:
     CefRefPtr<OverlayBrowserProcessHandler> m_pBrowserProcessHandler;
     CefRefPtr<OverlayClient> m_pGameClient;
     std::unique_ptr<RenderProvider> m_pRenderProvider;
+    std::wstring m_processName;
 };

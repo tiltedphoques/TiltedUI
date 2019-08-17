@@ -1,10 +1,18 @@
 #include <OverlayApp.h>
 #include <filesystem>
 
-OverlayApp::OverlayApp(std::unique_ptr<RenderProvider> apRenderProvider, const std::wstring& acProcessName) noexcept
+OverlayApp::OverlayApp(std::unique_ptr<RenderProvider> apRenderProvider, std::wstring aProcessName) noexcept
     : m_pBrowserProcessHandler(new OverlayBrowserProcessHandler)
     , m_pRenderProvider(std::move(apRenderProvider))
+    , m_processName(std::move(aProcessName))
 {
+}
+
+void OverlayApp::Initialize() noexcept
+{
+    if (m_pGameClient) 
+        return;
+
     CefMainArgs args(GetModuleHandleA(nullptr));
 
     std::error_code ec;
@@ -26,21 +34,11 @@ OverlayApp::OverlayApp(std::unique_ptr<RenderProvider> apRenderProvider, const s
     CefString(&settings.log_file).FromWString(currentPath / L"logs" / L"cef_debug.log");
     CefString(&settings.cache_path).FromWString(currentPath / L"cache");
 
-    CefString(&settings.browser_subprocess_path).FromWString(currentPath / acProcessName);
+    CefString(&settings.browser_subprocess_path).FromWString(currentPath / m_processName);
 
     CefInitialize(args, settings, this, nullptr);
 
-}
-
-void OverlayApp::Initialize() noexcept
-{
-    if (m_pGameClient) 
-        return;
-
     m_pGameClient = new OverlayClient(m_pRenderProvider->Create());
-
-    std::error_code ec;
-    const auto currentPath = std::filesystem::current_path(ec);
 
     CefBrowserSettings browserSettings{};
 
@@ -94,3 +92,4 @@ void OverlayApp::InjectMouseWheel(uint16_t aX, uint16_t aY, uint16_t aDelta, uin
 void OverlayApp::OnBeforeCommandLineProcessing(const CefString& aProcessType, CefRefPtr<CefCommandLine> aCommandLine)
 {
 }
+

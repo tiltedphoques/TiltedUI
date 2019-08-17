@@ -46,6 +46,7 @@ private:
     int m_width{0};
     int m_height{0};
     Microsoft::WRL::ComPtr<ID3D11Texture2D> m_pTexture;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pCursorTexture;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pTextureView;
     std::recursive_mutex m_textureLock;
     Renderer* m_pRenderer;
