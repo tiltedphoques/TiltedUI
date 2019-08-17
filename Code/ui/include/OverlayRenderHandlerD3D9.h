@@ -13,13 +13,11 @@ struct OverlayRenderHandlerD3D9 : OverlayRenderHandler
 {
     struct Renderer
     {
+        Renderer() = default;
         virtual ~Renderer() = default;
         [[nodiscard]] virtual IDirect3DDevice9* GetDevice() const noexcept = 0;
 
         TP_NOCOPYMOVE(Renderer);
-        
-        Signal<void(IDirect3DDevice9*)> OnLost;
-        Signal<void(IDirect3DDevice9*)> OnRender;
     };
 
     explicit OverlayRenderHandlerD3D9(Renderer* apRenderer) noexcept;
@@ -27,10 +25,9 @@ struct OverlayRenderHandlerD3D9 : OverlayRenderHandler
 
     TP_NOCOPYMOVE(OverlayRenderHandlerD3D9);
 
-    void Render(IDirect3DDevice9*);
-    void Lost(IDirect3DDevice9*);
-
-    void CreateResources() override;
+    void Create() override;
+    void Render() override;
+    void Reset() override;
 
     void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override;
     void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, const void* buffer, int width, int height) override;

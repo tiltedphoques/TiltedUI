@@ -17,24 +17,21 @@ struct OverlayRenderHandlerD3D11 : OverlayRenderHandler
 {
     struct Renderer
     {
+        Renderer() = default;
         virtual ~Renderer() = default;
         [[nodiscard]] virtual IDXGISwapChain* GetSwapChain() const noexcept = 0;
 
         TP_NOCOPYMOVE(Renderer);
-
-        Signal<void(IDXGISwapChain*)> OnLost;
-        Signal<void(IDXGISwapChain*)> OnRender;
     };
 
-    OverlayRenderHandlerD3D11(Renderer* apRenderer) noexcept;
+    explicit OverlayRenderHandlerD3D11(Renderer* apRenderer) noexcept;
     virtual ~OverlayRenderHandlerD3D11();
 
     TP_NOCOPYMOVE(OverlayRenderHandlerD3D11);
 
-    void Render(IDXGISwapChain* apSwapChain);
-    void Lost(IDXGISwapChain* apSwapChain);
-
-    void CreateResources() override;
+    void Create() override;
+    void Render() override;
+    void Reset() override;
 
     void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override;
     void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, const void* buffer, int width, int height) override;

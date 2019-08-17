@@ -7,13 +7,11 @@
 OverlayRenderHandlerD3D11::OverlayRenderHandlerD3D11(Renderer* apRenderer) noexcept
     : m_pRenderer(apRenderer)
 {
-    apRenderer->OnRender.Connect(std::bind(&OverlayRenderHandlerD3D11::Render, this, std::placeholders::_1));
-    apRenderer->OnLost.Connect(std::bind(&OverlayRenderHandlerD3D11::Lost, this, std::placeholders::_1));
 }
 
 OverlayRenderHandlerD3D11::~OverlayRenderHandlerD3D11() = default;
 
-void OverlayRenderHandlerD3D11::Render(IDXGISwapChain* apSwapChain)
+void OverlayRenderHandlerD3D11::Render()
 {
     Microsoft::WRL::ComPtr<ID3D11CommandList> pCommandList;
     const auto result = m_pContext->FinishCommandList(FALSE, &pCommandList);
@@ -31,12 +29,12 @@ void OverlayRenderHandlerD3D11::Render(IDXGISwapChain* apSwapChain)
     }
 }
 
-void OverlayRenderHandlerD3D11::Lost(IDXGISwapChain* apSwapChain)
+void OverlayRenderHandlerD3D11::Reset()
 {
-    CreateResources();
+    Create();
 }
 
-void OverlayRenderHandlerD3D11::CreateResources()
+void OverlayRenderHandlerD3D11::Create()
 {
     void* p;
     m_pRenderer->GetSwapChain()->GetDevice(IID_ID3D11Device, &p);
@@ -136,7 +134,7 @@ void OverlayRenderHandlerD3D11::OnPaint(CefRefPtr<CefBrowser> browser, PaintElem
         if (oldWidth != m_width || oldHeight != m_height)
         {
             browser->GetHost()->WasResized();
-            CreateResources();
+            Create();
         }
 
         D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -145,7 +143,7 @@ void OverlayRenderHandlerD3D11::OnPaint(CefRefPtr<CefBrowser> browser, PaintElem
 
         if (!m_pTexture)
         {
-            CreateResources();
+            Create();
         }
 
         Microsoft::WRL::ComPtr<ID3D11CommandList> pCommandList;

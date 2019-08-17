@@ -5,13 +5,11 @@
 OverlayRenderHandlerD3D9::OverlayRenderHandlerD3D9(Renderer* apRenderer) noexcept
     : m_pRenderer(apRenderer)
 {
-    apRenderer->OnRender.Connect(std::bind(&OverlayRenderHandlerD3D9::Render, this, std::placeholders::_1));
-    apRenderer->OnLost.Connect(std::bind(&OverlayRenderHandlerD3D9::Lost, this, std::placeholders::_1));
 }
 
 OverlayRenderHandlerD3D9::~OverlayRenderHandlerD3D9() = default;
 
-void OverlayRenderHandlerD3D9::Render(IDirect3DDevice9* apDevice)
+void OverlayRenderHandlerD3D9::Render()
 {
     D3DXVECTOR3 pos;
     pos.x = 0.0f;
@@ -23,12 +21,12 @@ void OverlayRenderHandlerD3D9::Render(IDirect3DDevice9* apDevice)
     m_pSprite->End();
 }
 
-void OverlayRenderHandlerD3D9::Lost(IDirect3DDevice9* apDevice)
+void OverlayRenderHandlerD3D9::Reset()
 {
-    CreateResources();
+    Create();
 }
 
-void OverlayRenderHandlerD3D9::CreateResources()
+void OverlayRenderHandlerD3D9::Create()
 {
     m_pTexture.Reset();
     m_pSprite.Reset();
@@ -67,7 +65,7 @@ void OverlayRenderHandlerD3D9::OnPaint(CefRefPtr<CefBrowser> browser, PaintEleme
         if (oldWidth != m_width || oldHeight != m_height)
         {
             browser->GetHost()->WasResized();
-            CreateResources();
+            Create();
         }
 
         D3DLOCKED_RECT area;

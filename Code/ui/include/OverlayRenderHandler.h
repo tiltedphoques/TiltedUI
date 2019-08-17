@@ -3,5 +3,7 @@
 
 struct OverlayRenderHandler : CefRenderHandler
 {
-    virtual void CreateResources() = 0;
+    virtual void Reset() = 0;
+    virtual void Render() = 0;
+    virtual void Create() = 0;
 };
