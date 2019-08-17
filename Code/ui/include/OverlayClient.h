@@ -19,7 +19,9 @@ struct OverlayClient : CefClient, CefLifeSpanHandler, CefContextMenuHandler
 
     [[nodiscard]] CefRefPtr<CefBrowser> GetBrowser() const noexcept;
 
-    void CreateResources() noexcept;
+    void Render() const noexcept;
+    void Create() const noexcept;
+    void Reset() const noexcept;
 
     void OnAfterCreated(CefRefPtr<CefBrowser> aBrowser) override;
     void OnBeforeClose(CefRefPtr<CefBrowser> aBrowser) override;

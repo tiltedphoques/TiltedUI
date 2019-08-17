@@ -40,10 +40,22 @@ CefRefPtr<CefBrowser> OverlayClient::GetBrowser() const noexcept
     return m_pBrowser;
 }
 
-void OverlayClient::CreateResources() noexcept
+void OverlayClient::Create() const noexcept
 {
     if (m_pRenderHandler)
-        m_pRenderHandler->CreateResources();
+        m_pRenderHandler->Create();
+}
+
+void OverlayClient::Render() const noexcept
+{
+    if (m_pRenderHandler)
+        m_pRenderHandler->Render();
+}
+
+void OverlayClient::Reset() const noexcept
+{
+    if (m_pRenderHandler)
+        m_pRenderHandler->Reset();
 }
 
 void OverlayClient::OnAfterCreated(CefRefPtr<CefBrowser> aBrowser)
