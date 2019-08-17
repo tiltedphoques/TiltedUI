@@ -2,7 +2,6 @@
 
 #include <OverlayRenderHandler.h>
 #include <Meta.h>
-#include <SpriteBatch.h>
 #include <wrl.h>
 #include <mutex>
 #include <Signal.h>
@@ -12,6 +11,11 @@ namespace DirectX
     struct SpriteBatch;
     struct CommonStates;
 }
+
+struct IDXGISwapChain;
+struct ID3D11Texture2D;
+struct ID3D11ShaderResourceView;
+struct ID3D11DeviceContext;
 
 struct OverlayRenderHandlerD3D11 : OverlayRenderHandler
 {

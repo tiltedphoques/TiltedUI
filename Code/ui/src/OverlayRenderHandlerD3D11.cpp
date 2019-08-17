@@ -1,8 +1,10 @@
 #include <OverlayRenderHandlerD3D11.h>
 
+#include <SpriteBatch.h>
 #include <DirectXColors.h>
 #include <SimpleMath.h>
 #include <CommonStates.h>
+
 
 OverlayRenderHandlerD3D11::OverlayRenderHandlerD3D11(Renderer* apRenderer) noexcept
     : m_pRenderer(apRenderer)
