@@ -11,12 +11,23 @@
 OverlayRenderHandlerD3D11::OverlayRenderHandlerD3D11(Renderer* apRenderer) noexcept
     : m_pRenderer(apRenderer)
 {
+    // So we need to lock this until we have the window dimension as a background CEF thread will attempt to get it before we have it
+    m_createLock.lock();
 }
 
 OverlayRenderHandlerD3D11::~OverlayRenderHandlerD3D11() = default;
 
 void OverlayRenderHandlerD3D11::Render()
 {
+    // We need contexts first
+    if(!m_pImmediateContext || !m_pContext)
+    {
+        Create();
+
+        if (!m_pImmediateContext || !m_pContext)
+            return;
+    }
+
     // First of all we flush our deferred context in case we have updated the texture
     {
         std::unique_lock<std::mutex> _(m_textureLock);
@@ -64,23 +75,29 @@ void OverlayRenderHandlerD3D11::Create()
 
     m_pDevice->GetImmediateContext(m_pImmediateContext.ReleaseAndGetAddressOf());
 
-    if (!m_pContext)
+    if (!m_pImmediateContext)
         return;
+
+    GetRenderTargetSize();
 
     if (FAILED(m_pDevice->CreateDeferredContext(0, m_pContext.ReleaseAndGetAddressOf())))
         return;
 
-    m_pSpriteBatch = std::make_unique<DirectX::SpriteBatch>(m_pContext.Get());
+    m_pSpriteBatch = std::make_unique<DirectX::SpriteBatch>(m_pImmediateContext.Get());
     m_pStates = std::make_unique<DirectX::CommonStates>(m_pDevice.Get());
 
     DirectX::CreateWICTextureFromFile(m_pDevice.Get(), L"Data\\Online\\UI\\assets\\images\\cursor.png", nullptr, m_pCursorTexture.ReleaseAndGetAddressOf());
 
-    GetRenderTargetSize();
-    CreateRenderTexture();
+    std::unique_lock<std::mutex> _(m_textureLock);
+
+    if (!m_pTexture)
+        CreateRenderTexture();
 }
 
 void OverlayRenderHandlerD3D11::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect)
 {
+    std::scoped_lock _(m_createLock);
+
     rect = CefRect(0, 0, m_width, m_height);
 }
 
@@ -89,12 +106,10 @@ void OverlayRenderHandlerD3D11::OnPaint(CefRefPtr<CefBrowser> browser, PaintElem
 {
     if (type == PET_VIEW)
     {
-        if (!m_pTexture)
-        {
-            CreateRenderTexture();
-        }
-
         std::unique_lock<std::mutex> _(m_textureLock);
+
+        if (!m_pTexture)
+            CreateRenderTexture();
 
         D3D11_MAPPED_SUBRESOURCE mappedResource;
         m_pContext->Map(m_pTexture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -126,6 +141,9 @@ void OverlayRenderHandlerD3D11::GetRenderTargetSize()
             {
                 m_width = desc.Width;
                 m_height = desc.Height;
+
+                // We now know the size of the viewport, we can let CEF get it
+                m_createLock.unlock();
 
                 {
                     std::unique_lock<std::mutex> _(m_textureLock);

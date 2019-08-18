@@ -56,6 +56,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pCursorTexture;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pTextureView;
     std::mutex m_textureLock;
+    std::mutex m_createLock;
     Renderer* m_pRenderer;
 
     Microsoft::WRL::ComPtr<ID3D11Device> m_pDevice;
