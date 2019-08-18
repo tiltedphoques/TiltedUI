@@ -8,6 +8,7 @@ OverlayClient::OverlayClient(OverlayRenderHandler* apHandler) noexcept
     , m_pBrowser(nullptr)
     , m_pContextMenuHandler(new OverlayContextHandler)
 {
+    apHandler->SetParent(this);
 }
 
 CefRefPtr<CefRenderHandler> OverlayClient::GetRenderHandler()

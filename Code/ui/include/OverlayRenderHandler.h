@@ -1,6 +1,7 @@
 #pragma once
 #include <include/cef_render_handler.h>
 
+struct OverlayClient;
 struct OverlayRenderHandler : CefRenderHandler
 {
     virtual void Reset() = 0;
@@ -23,9 +24,14 @@ struct OverlayRenderHandler : CefRenderHandler
         m_cursorY = aY;
     }
 
-    std::pair<uint16_t, uint16_t> GetCursorLocation() const noexcept
+    [[nodiscard]] std::pair<uint16_t, uint16_t> GetCursorLocation() const noexcept
     {
         return std::make_pair(m_cursorX, m_cursorY);
+    }
+
+    void SetParent(OverlayClient* apParent) noexcept
+    {
+        m_pParent = apParent;
     }
 
 protected:
@@ -33,4 +39,5 @@ protected:
     bool m_visible{false};
     uint16_t m_cursorX{0};
     uint16_t m_cursorY{0};
+    OverlayClient* m_pParent{nullptr};
 };

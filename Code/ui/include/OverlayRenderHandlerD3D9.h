@@ -4,6 +4,7 @@
 #include <Meta.h>
 #include <Signal.h>
 #include <wrl.h>
+#include <mutex>
 
 struct IDirect3DTexture9;
 struct IDirect3DDevice9;
@@ -34,9 +35,15 @@ struct OverlayRenderHandlerD3D9 : OverlayRenderHandler
 
     IMPLEMENT_REFCOUNTING(OverlayRenderHandlerD3D9);
 
+protected:
+
+    void CreateRenderTexture();
+    void GetRenderTargetSize();
+
 private:
-    int m_width{ 0 };
-    int m_height{ 0 };
+    uint32_t m_width{ 0 };
+    uint32_t m_height{ 0 };
+    std::mutex m_textureLock;
     Microsoft::WRL::ComPtr<IDirect3DTexture9> m_pTexture;
     Microsoft::WRL::ComPtr<ID3DXSprite> m_pSprite;
     Renderer* m_pRenderer;

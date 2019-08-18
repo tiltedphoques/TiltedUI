@@ -8,14 +8,15 @@
 
 namespace DirectX
 {
-    struct SpriteBatch;
-    struct CommonStates;
+    class SpriteBatch;
+    class CommonStates;
 }
 
 struct IDXGISwapChain;
 struct ID3D11Texture2D;
 struct ID3D11ShaderResourceView;
 struct ID3D11DeviceContext;
+struct ID3D11Device;
 
 struct OverlayRenderHandlerD3D11 : OverlayRenderHandler
 {
@@ -42,16 +43,24 @@ struct OverlayRenderHandlerD3D11 : OverlayRenderHandler
 
     IMPLEMENT_REFCOUNTING(OverlayRenderHandlerD3D11);
 
+protected:
+
+    void GetRenderTargetSize();
+    void CreateRenderTexture();
+
 private:
-    int m_width{0};
-    int m_height{0};
+    uint32_t m_width{0};
+    uint32_t m_height{0};
+
     Microsoft::WRL::ComPtr<ID3D11Texture2D> m_pTexture;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pCursorTexture;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pTextureView;
-    std::recursive_mutex m_textureLock;
+    std::mutex m_textureLock;
     Renderer* m_pRenderer;
 
+    Microsoft::WRL::ComPtr<ID3D11Device> m_pDevice;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_pContext;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_pImmediateContext;
 
     std::unique_ptr<DirectX::SpriteBatch> m_pSpriteBatch;
     std::unique_ptr<DirectX::CommonStates> m_pStates;
