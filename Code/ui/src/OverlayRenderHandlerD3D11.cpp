@@ -156,7 +156,8 @@ void OverlayRenderHandlerD3D11::GetRenderTargetSize()
                     m_pTextureView.Reset();
                 }
 
-                m_pParent->GetBrowser()->GetHost()->WasResized();
+                if(m_pParent->GetBrowser())
+                    m_pParent->GetBrowser()->GetHost()->WasResized();
             }
         }
     }
