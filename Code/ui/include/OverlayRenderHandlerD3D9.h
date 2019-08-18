@@ -44,7 +44,9 @@ private:
     uint32_t m_width{ 0 };
     uint32_t m_height{ 0 };
     std::mutex m_textureLock;
+    std::mutex m_createLock;
     Microsoft::WRL::ComPtr<IDirect3DTexture9> m_pTexture;
+    Microsoft::WRL::ComPtr<IDirect3DTexture9> m_pCursorTexture;
     Microsoft::WRL::ComPtr<ID3DXSprite> m_pSprite;
     Renderer* m_pRenderer;
 };

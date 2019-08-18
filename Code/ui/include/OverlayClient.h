@@ -12,12 +12,15 @@ struct OverlayClient : CefClient, CefLifeSpanHandler, CefContextMenuHandler
 
     TP_NOCOPYMOVE(OverlayClient);
 
+    [[nodiscard]]  CefRefPtr<OverlayRenderHandler> GetOverlayRenderHandler();
     CefRefPtr<CefRenderHandler> GetRenderHandler() override;
     CefRefPtr<CefLoadHandler> GetLoadHandler() override;
     CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override;
     CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() override;
 
     [[nodiscard]] CefRefPtr<CefBrowser> GetBrowser() const noexcept;
+    [[nodiscard]] const std::wstring& GetCursorPathPNG() const noexcept;
+    [[nodiscard]] const std::wstring& GetCursorPathDDS() const noexcept;
 
     void Render() const noexcept;
     void Create() const noexcept;
@@ -39,5 +42,8 @@ private:
     CefRefPtr<OverlayLoadHandler> m_pLoadHandler;
     CefRefPtr<CefBrowser> m_pBrowser;
     CefRefPtr<CefContextMenuHandler> m_pContextMenuHandler;
+
+    std::wstring m_cursorPathPNG;
+    std::wstring m_cursorPathDDS;
 
 };

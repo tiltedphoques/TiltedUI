@@ -73,20 +73,63 @@ void OverlayApp::ExecuteAsync(const std::string& acFunction, const CefRefPtr<Cef
     }
 }
 
-void OverlayApp::InjectKey(cef_key_event_type_t aType, uint32_t aModifiers, uint16_t aKey, uint16_t aScanCode) noexcept
+void OverlayApp::InjectKey(const cef_key_event_type_t aType, const uint32_t aModifiers, const uint16_t aKey, const uint16_t aScanCode) const noexcept
 {
+    if (m_pGameClient && m_pGameClient->IsReady())
+    {
+        CefKeyEvent ev;
+
+        ev.type = aType;
+        ev.modifiers = aModifiers;
+        ev.windows_key_code = aKey;
+        ev.native_key_code = aScanCode;
+
+        m_pGameClient->GetBrowser()->GetHost()->SendKeyEvent(ev);
+    }
 }
 
-void OverlayApp::InjectMouseButton(uint16_t aX, uint16_t aY, cef_mouse_button_type_t aButton, bool aUp, uint32_t aModifier) noexcept
+void OverlayApp::InjectMouseButton(const uint16_t aX, const uint16_t aY, const cef_mouse_button_type_t aButton, const bool aUp, const uint32_t aModifier) const noexcept
 {
+    if (m_pGameClient && m_pGameClient->IsReady())
+    {
+        CefMouseEvent ev;
+
+        ev.x = aX;
+        ev.y = aY;
+        ev.modifiers = aModifier;
+
+        m_pGameClient->GetBrowser()->GetHost()->SendMouseClickEvent(ev, aButton, aUp, 1);
+    }
 }
 
-void OverlayApp::InjectMouseMove(uint16_t aX, uint16_t aY, uint32_t aModifier) noexcept
+void OverlayApp::InjectMouseMove(const uint16_t aX, const uint16_t aY, const uint32_t aModifier) const noexcept
 {
+    if (m_pGameClient && m_pGameClient->IsReady())
+    {
+        CefMouseEvent ev;
+
+        ev.x = aX;
+        ev.y = aY;
+        ev.modifiers = aModifier;
+
+        m_pGameClient->GetOverlayRenderHandler()->SetCursorLocation(aX, aY);
+
+        m_pGameClient->GetBrowser()->GetHost()->SendMouseMoveEvent(ev, false);
+    }
 }
 
-void OverlayApp::InjectMouseWheel(uint16_t aX, uint16_t aY, uint16_t aDelta, uint32_t aModifier) noexcept
+void OverlayApp::InjectMouseWheel(const uint16_t aX, const uint16_t aY, const uint16_t aDelta, const uint32_t aModifier) const noexcept
 {
+    if (m_pGameClient && m_pGameClient->IsReady())
+    {
+        CefMouseEvent ev;
+
+        ev.x = aX;
+        ev.y = aY;
+        ev.modifiers = aModifier;
+
+        m_pGameClient->GetBrowser()->GetHost()->SendMouseWheelEvent(ev, 0, aDelta);
+    }
 }
 
 void OverlayApp::OnBeforeCommandLineProcessing(const CefString& aProcessType, CefRefPtr<CefCommandLine> aCommandLine)

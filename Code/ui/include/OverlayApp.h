@@ -28,7 +28,7 @@ struct OverlayApp : CefApp
 
     [[nodiscard]] OverlayClient* GetClient() const noexcept { return m_pGameClient.get(); };
 
-    void InjectKey(cef_key_event_type_t aType, uint32_t aModifiers, uint16_t aKey, uint16_t aScanCode) noexcept;
+    void InjectKey(cef_key_event_type_t aType, uint32_t aModifiers, uint16_t aKey, uint16_t aScanCode) const noexcept;
     void InjectMouseButton(uint16_t aX, uint16_t aY, cef_mouse_button_type_t aButton, bool aUp, uint32_t aModifier) noexcept;
     void InjectMouseMove(uint16_t aX, uint16_t aY, uint32_t aModifier) noexcept;
     void InjectMouseWheel(uint16_t aX, uint16_t aY, uint16_t aDelta, uint32_t aModifier) noexcept;

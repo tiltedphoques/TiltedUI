@@ -6,6 +6,7 @@
 #include <SimpleMath.h>
 #include <CommonStates.h>
 #include <WICTextureLoader.h>
+#include <DDSTextureLoader.h>
 
 
 OverlayRenderHandlerD3D11::OverlayRenderHandlerD3D11(Renderer* apRenderer) noexcept
@@ -86,7 +87,10 @@ void OverlayRenderHandlerD3D11::Create()
     m_pSpriteBatch = std::make_unique<DirectX::SpriteBatch>(m_pImmediateContext.Get());
     m_pStates = std::make_unique<DirectX::CommonStates>(m_pDevice.Get());
 
-    DirectX::CreateWICTextureFromFile(m_pDevice.Get(), L"Data\\Online\\UI\\assets\\images\\cursor.png", nullptr, m_pCursorTexture.ReleaseAndGetAddressOf());
+    if(FAILED(DirectX::CreateWICTextureFromFile(m_pDevice.Get(), m_pParent->GetCursorPathPNG().c_str(), nullptr, m_pCursorTexture.ReleaseAndGetAddressOf())))
+    {
+        DirectX::CreateDDSTextureFromFile(m_pDevice.Get(), m_pParent->GetCursorPathDDS().c_str(), nullptr, m_pCursorTexture.ReleaseAndGetAddressOf());
+    }
 
     std::unique_lock<std::mutex> _(m_textureLock);
 

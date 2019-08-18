@@ -7,22 +7,41 @@
 OverlayRenderHandlerD3D9::OverlayRenderHandlerD3D9(Renderer* apRenderer) noexcept
     : m_pRenderer(apRenderer)
 {
+    // See D3D11
+    m_createLock.lock();
 }
 
 OverlayRenderHandlerD3D9::~OverlayRenderHandlerD3D9() = default;
 
 void OverlayRenderHandlerD3D9::Render()
 {
-    D3DXVECTOR3 pos;
-    pos.x = 0.0f;
-    pos.y = 0.0f;
-    pos.z = 0.0f;
+    if (IsVisible())
+    {
+        m_pSprite->Begin(D3DXSPRITE_ALPHABLEND);
 
-    std::scoped_lock _(m_textureLock);
+        {
+            D3DXVECTOR3 pos;
+            pos.x = 0.0f;
+            pos.y = 0.0f;
+            pos.z = 0.0f;
 
-    m_pSprite->Begin(D3DXSPRITE_ALPHABLEND);
-    m_pSprite->Draw(m_pTexture.Get(), nullptr, nullptr, &pos, 0xFFFFFFFF);
-    m_pSprite->End();
+            std::scoped_lock _(m_textureLock);
+
+            if (m_pTexture)
+                m_pSprite->Draw(m_pTexture.Get(), nullptr, nullptr, &pos, 0xFFFFFFFF);
+        }
+        if (m_pCursorTexture)
+        {
+            D3DXVECTOR3 pos;
+            pos.x = m_cursorX;
+            pos.y = m_cursorY;
+            pos.z = 0.0f;
+
+            m_pSprite->Draw(m_pCursorTexture.Get(), nullptr, nullptr, &pos, 0xFFFFFFFF);
+        }
+
+        m_pSprite->End();
+    }
 }
 
 void OverlayRenderHandlerD3D9::Reset()
@@ -32,11 +51,14 @@ void OverlayRenderHandlerD3D9::Reset()
 
 void OverlayRenderHandlerD3D9::Create()
 {
-    std::scoped_lock _(m_textureLock);
-
     const auto pDevice = m_pRenderer->GetDevice();
 
     GetRenderTargetSize();
+
+    if (FAILED(D3DXCreateTextureFromFileW(pDevice, m_pParent->GetCursorPathPNG().c_str(), m_pCursorTexture.ReleaseAndGetAddressOf())))
+        D3DXCreateTextureFromFileW(pDevice, m_pParent->GetCursorPathDDS().c_str(), m_pCursorTexture.ReleaseAndGetAddressOf());
+
+    std::scoped_lock _(m_textureLock);
 
     D3DXCreateSprite(pDevice, m_pSprite.ReleaseAndGetAddressOf());
 
@@ -45,6 +67,8 @@ void OverlayRenderHandlerD3D9::Create()
 
 void OverlayRenderHandlerD3D9::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect)
 {
+    std::scoped_lock _(m_createLock);
+
     rect = CefRect(0, 0, m_width, m_height);
 }
 
@@ -84,6 +108,8 @@ void OverlayRenderHandlerD3D9::GetRenderTargetSize()
     {
         m_width = viewport.Width;
         m_height = viewport.Height;
+
+        m_createLock.unlock();
 
         {
             std::scoped_lock _(m_textureLock);

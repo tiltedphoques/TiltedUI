@@ -8,7 +8,15 @@ OverlayClient::OverlayClient(OverlayRenderHandler* apHandler) noexcept
     , m_pBrowser(nullptr)
     , m_pContextMenuHandler(new OverlayContextHandler)
 {
+    m_cursorPathPNG = L"Data\\Online\\UI\\assets\\images\\cursor.png";
+    m_cursorPathDDS = L"Data\\Online\\UI\\assets\\images\\cursor.dds";
+
     apHandler->SetParent(this);
+}
+
+CefRefPtr<OverlayRenderHandler> OverlayClient::GetOverlayRenderHandler()
+{
+    return m_pRenderHandler;
 }
 
 CefRefPtr<CefRenderHandler> OverlayClient::GetRenderHandler()
@@ -39,6 +47,16 @@ void OverlayClient::SetBrowser(const CefRefPtr<CefBrowser>& aBrowser) noexcept
 CefRefPtr<CefBrowser> OverlayClient::GetBrowser() const noexcept
 {
     return m_pBrowser;
+}
+
+const std::wstring& OverlayClient::GetCursorPathPNG() const noexcept
+{
+    return m_cursorPathPNG;
+}
+
+const std::wstring& OverlayClient::GetCursorPathDDS() const noexcept
+{
+    return m_cursorPathDDS;
 }
 
 void OverlayClient::Create() const noexcept
