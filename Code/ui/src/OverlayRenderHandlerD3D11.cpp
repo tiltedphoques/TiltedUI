@@ -165,8 +165,6 @@ void OverlayRenderHandlerD3D11::GetRenderTargetSize()
 
 void OverlayRenderHandlerD3D11::CreateRenderTexture()
 {
-    std::unique_lock<std::mutex> _(m_textureLock);
-
     D3D11_TEXTURE2D_DESC textDesc;
     textDesc.Width = m_width;
     textDesc.Height = m_height;
