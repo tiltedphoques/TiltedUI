@@ -8,6 +8,8 @@
 #include <WICTextureLoader.h>
 #include <DDSTextureLoader.h>
 
+#include <iostream>
+
 
 OverlayRenderHandlerD3D11::OverlayRenderHandlerD3D11(Renderer* apRenderer) noexcept
     : m_pRenderer(apRenderer)
@@ -55,9 +57,11 @@ void OverlayRenderHandlerD3D11::Render()
                 m_pSpriteBatch->Draw(m_pTextureView.Get(), DirectX::SimpleMath::Vector2(0.f, 0.f), nullptr, DirectX::Colors::White, 0.f);
         }
         
-        if(m_pCursorTexture)
-            m_pSpriteBatch->Draw(m_pCursorTexture.Get(), DirectX::SimpleMath::Vector2(100, 100), nullptr, DirectX::Colors::White, 0.f, DirectX::SimpleMath::Vector2(m_cursorX, m_cursorY), m_width / 1920.f);
-        
+        if (m_pCursorTexture)
+        {
+            m_pSpriteBatch->Draw(m_pCursorTexture.Get(), DirectX::SimpleMath::Vector2(m_cursorX, m_cursorY), nullptr, DirectX::Colors::White, 0.f, DirectX::SimpleMath::Vector2(0, 0), m_width / 1920.f);
+        }
+
         m_pSpriteBatch->End();
     }
 }
