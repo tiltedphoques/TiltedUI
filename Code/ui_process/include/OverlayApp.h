@@ -4,18 +4,21 @@
 #include <OverlayRenderProcessHandler.h>
 #include <functional>
 
-struct OverlayApp final : CefApp
+namespace TiltedPhoques
 {
-    explicit OverlayApp(const std::function<OverlayRenderProcessHandler* ()>& aFactory) noexcept;
-    ~OverlayApp() = default;
+	struct OverlayApp final : CefApp
+	{
+		explicit OverlayApp(const std::function<OverlayRenderProcessHandler* ()>& aFactory) noexcept;
+		~OverlayApp() = default;
 
-    CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override;
+		CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override;
 
-    IMPLEMENT_REFCOUNTING(OverlayApp);
+		IMPLEMENT_REFCOUNTING(OverlayApp);
 
-private:
+	private:
 
-    CefRefPtr<OverlayRenderProcessHandler> m_pRenderProcess;
-};
+		CefRefPtr<OverlayRenderProcessHandler> m_pRenderProcess;
+	};
 
-int TiltedUIMain(const char* acpArgs, HINSTANCE aInstance, const std::function<OverlayRenderProcessHandler* ()>& acFactory) noexcept;
+	int UIMain(const char* acpArgs, HINSTANCE aInstance, const std::function<OverlayRenderProcessHandler* ()>& acFactory) noexcept;
+}

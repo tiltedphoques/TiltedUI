@@ -3,15 +3,17 @@
 
 #include <Meta.h>
 
-
-struct OverlayContextHandler final : CefContextMenuHandler
+namespace TiltedPhoques
 {
-    OverlayContextHandler() = default;
-    virtual ~OverlayContextHandler() = default;
+	struct OverlayContextHandler final : CefContextMenuHandler
+	{
+		OverlayContextHandler() = default;
+		virtual ~OverlayContextHandler() = default;
 
-    TP_NOCOPYMOVE(OverlayContextHandler);
+		TP_NOCOPYMOVE(OverlayContextHandler);
 
-    void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefContextMenuParams> params, CefRefPtr<CefMenuModel> model) override;
+		void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefContextMenuParams> params, CefRefPtr<CefMenuModel> model) override;
 
-    IMPLEMENT_REFCOUNTING(OverlayContextHandler);
-};
+		IMPLEMENT_REFCOUNTING(OverlayContextHandler);
+	};
+}

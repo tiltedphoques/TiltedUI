@@ -3,22 +3,25 @@
 #include <include/cef_load_handler.h>
 #include <Meta.h>
 
-struct OverlayLoadHandler final : CefLoadHandler
+namespace TiltedPhoques
 {
-    OverlayLoadHandler() = default;
-    virtual ~OverlayLoadHandler() = default;
+	struct OverlayLoadHandler final : CefLoadHandler
+	{
+		OverlayLoadHandler() = default;
+		virtual ~OverlayLoadHandler() = default;
 
-    TP_NOCOPYMOVE(OverlayLoadHandler);
+		TP_NOCOPYMOVE(OverlayLoadHandler);
 
-    void OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, TransitionType transition_type) override;
-    void OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int httpStatusCode) override;
-    bool OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefLoadHandler::ErrorCode errorCode, const CefString& failedUrl, CefString& errorText);
+		void OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, TransitionType transition_type) override;
+		void OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int httpStatusCode) override;
+		bool OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefLoadHandler::ErrorCode errorCode, const CefString& failedUrl, CefString& errorText);
 
-    [[nodiscard]] bool IsReady() const noexcept { return m_ready; }
+		[[nodiscard]] bool IsReady() const noexcept { return m_ready; }
 
-    IMPLEMENT_REFCOUNTING(OverlayLoadHandler);
+		IMPLEMENT_REFCOUNTING(OverlayLoadHandler);
 
-private:
+	private:
 
-    bool m_ready{ false };
-};
+		bool m_ready{ false };
+	};
+}

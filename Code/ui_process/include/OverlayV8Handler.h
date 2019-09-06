@@ -2,20 +2,23 @@
 
 #include <include/cef_v8.h>
 
-struct OverlayV8Handler final : CefV8Handler
+namespace TiltedPhoques
 {
-    explicit OverlayV8Handler(const CefRefPtr<CefBrowser>& apBrowser) noexcept;
-    ~OverlayV8Handler() = default;
+	struct OverlayV8Handler final : CefV8Handler
+	{
+		explicit OverlayV8Handler(const CefRefPtr<CefBrowser>& apBrowser) noexcept;
+		~OverlayV8Handler() = default;
 
-    bool Execute(const CefString& acName, CefRefPtr<CefV8Value> apObject, const CefV8ValueList& acArguments, CefRefPtr<CefV8Value>& aReturnValue, CefString& aException) override;
+		bool Execute(const CefString& acName, CefRefPtr<CefV8Value> apObject, const CefV8ValueList& acArguments, CefRefPtr<CefV8Value>& aReturnValue, CefString& aException) override;
 
-    IMPLEMENT_REFCOUNTING(OverlayV8Handler);
+		IMPLEMENT_REFCOUNTING(OverlayV8Handler);
 
-private:
+	private:
 
-    void Dispatch(const CefString& acName, const CefV8ValueList& acArguments) const noexcept;
+		void Dispatch(const CefString& acName, const CefV8ValueList& acArguments) const noexcept;
 
-    static CefRefPtr<CefValue> ConvertValue(const CefRefPtr<CefV8Value>& acpValue);
+		static CefRefPtr<CefValue> ConvertValue(const CefRefPtr<CefV8Value>& acpValue);
 
-    CefRefPtr<CefBrowser> m_pBrowser;
-};
+		CefRefPtr<CefBrowser> m_pBrowser;
+	};
+}

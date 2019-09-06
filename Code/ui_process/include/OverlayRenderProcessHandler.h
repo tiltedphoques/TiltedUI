@@ -7,36 +7,39 @@
 #include <OverlayV8Handler.h>
 #include <EventsV8Handler.h>
 
-struct OverlayRenderProcessHandler : CefRenderProcessHandler
+namespace TiltedPhoques
 {
-    explicit OverlayRenderProcessHandler(std::string aCoreObjectName = "core") noexcept;
-    ~OverlayRenderProcessHandler() = default;
+	struct OverlayRenderProcessHandler : CefRenderProcessHandler
+	{
+		explicit OverlayRenderProcessHandler(std::string aCoreObjectName = "core") noexcept;
+		~OverlayRenderProcessHandler() = default;
 
-    OverlayRenderProcessHandler(OverlayRenderProcessHandler&&) = delete;
-    OverlayRenderProcessHandler(const OverlayRenderProcessHandler&) = delete;
+		OverlayRenderProcessHandler(OverlayRenderProcessHandler&&) = delete;
+		OverlayRenderProcessHandler(const OverlayRenderProcessHandler&) = delete;
 
-    OverlayRenderProcessHandler& operator=(const OverlayRenderProcessHandler&) = delete;
-    OverlayRenderProcessHandler& operator=(OverlayRenderProcessHandler&&) = delete;
+		OverlayRenderProcessHandler& operator=(const OverlayRenderProcessHandler&) = delete;
+		OverlayRenderProcessHandler& operator=(OverlayRenderProcessHandler&&) = delete;
 
-    void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) override;
-    void OnContextReleased(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) override;
+		void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) override;
+		void OnContextReleased(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) override;
 
-    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
-        CefRefPtr<CefFrame> frame,
-        CefProcessId sourceProcess,
-        CefRefPtr<CefProcessMessage> message) override final;
+		bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+			CefRefPtr<CefFrame> frame,
+			CefProcessId sourceProcess,
+			CefRefPtr<CefProcessMessage> message) override final;
 
-    void CreateEvent(const std::string& acEventName) const;
-    void CreateFunction(const std::string& acFunctionName) const;
+		void CreateEvent(const std::string& acEventName) const;
+		void CreateFunction(const std::string& acFunctionName) const;
 
-    IMPLEMENT_REFCOUNTING(OverlayRenderProcessHandler);
+		IMPLEMENT_REFCOUNTING(OverlayRenderProcessHandler);
 
-protected:
+	protected:
 
-    static CefRefPtr<CefV8Value> ConvertValue(const CefRefPtr<CefValue>& apValue);
+		static CefRefPtr<CefV8Value> ConvertValue(const CefRefPtr<CefValue>& apValue);
 
-    CefRefPtr<EventsV8Handler> m_pEventsHandler;
-    CefRefPtr<OverlayV8Handler> m_pOverlayHandler;
-    CefRefPtr<CefV8Value> m_pCoreObject;
-    std::string m_coreObjectName;
-};
+		CefRefPtr<EventsV8Handler> m_pEventsHandler;
+		CefRefPtr<OverlayV8Handler> m_pOverlayHandler;
+		CefRefPtr<CefV8Value> m_pCoreObject;
+		std::string m_coreObjectName;
+	};
+}
