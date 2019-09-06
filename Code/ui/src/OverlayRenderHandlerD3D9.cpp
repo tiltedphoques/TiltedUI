@@ -1,5 +1,5 @@
-#include <OverlayRenderHandlerD3D9.h>
-#include <OverlayClient.h>
+#include <OverlayRenderHandlerD3D9.hpp>
+#include <OverlayClient.hpp>
 
 #include <d3d9.h>
 #include <d3dx9tex.h>

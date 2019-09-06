@@ -1,5 +1,5 @@
-#include <OverlayV8Handler.h>
-#include <Platform.h>
+#include <OverlayV8Handler.hpp>
+#include <Platform.hpp>
 
 namespace TiltedPhoques
 {

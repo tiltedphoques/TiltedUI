@@ -1,8 +1,7 @@
 #pragma once
 
-#include <OverlayRenderHandler.h>
-#include <Meta.h>
-#include <Signal.h>
+#include <OverlayRenderHandler.hpp>
+#include <Signal.hpp>
 #include <wrl.h>
 #include <mutex>
 

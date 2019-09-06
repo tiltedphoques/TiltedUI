@@ -1,6 +1,5 @@
-#include <OverlayClient.h>
-
-#include <OverlayContextHandler.h>
+#include <OverlayClient.hpp>
+#include <OverlayContextHandler.hpp>
 
 namespace TiltedPhoques
 {

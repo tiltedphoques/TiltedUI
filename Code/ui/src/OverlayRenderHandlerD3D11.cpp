@@ -1,5 +1,5 @@
-#include <OverlayRenderHandlerD3D11.h>
-#include <OverlayClient.h>
+#include <OverlayRenderHandlerD3D11.hpp>
+#include <OverlayClient.hpp>
 
 #include <SpriteBatch.h>
 #include <DirectXColors.h>

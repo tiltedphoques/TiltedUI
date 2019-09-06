@@ -1,5 +1,5 @@
-#include <OverlayRenderProcessHandler.h>
-#include <Platform.h>
+#include <OverlayRenderProcessHandler.hpp>
+#include <Platform.hpp>
 
 namespace TiltedPhoques
 {

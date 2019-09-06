@@ -1,4 +1,4 @@
-#include <OverlayLoadHandler.h>
+#include <OverlayLoadHandler.hpp>
 
 namespace TiltedPhoques
 {

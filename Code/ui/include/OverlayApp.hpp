@@ -1,10 +1,10 @@
 #pragma once
 
 #include <include/cef_app.h>
-#include <OverlayBrowserProcessHandler.h>
-#include <OverlayClient.h>
+#include <OverlayBrowserProcessHandler.hpp>
+#include <OverlayClient.hpp>
 
-#include <Meta.h>
+#include <Meta.hpp>
 
 namespace TiltedPhoques
 {

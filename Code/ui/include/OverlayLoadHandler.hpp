@@ -1,7 +1,7 @@
 #pragma once
 
 #include <include/cef_load_handler.h>
-#include <Meta.h>
+#include <Meta.hpp>
 
 namespace TiltedPhoques
 {

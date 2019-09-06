@@ -24,7 +24,7 @@ function CreateUIProject(basePath, coreBasePath)
 
         files
         {
-            basePath .. "/Code/ui/include/**.h",
+            basePath .. "/Code/ui/include/**.hpp",
             basePath .. "/Code/ui/src/**.cpp",
         }
         
@@ -85,7 +85,7 @@ function CreateUIProcessProject(basePath, coreBasePath)
 
         files
         {
-            basePath .. "/Code/ui_process/include/**.h",
+            basePath .. "/Code/ui_process/include/**.hpp",
             basePath .. "/Code/ui_process/src/**.cpp",
         }
         
