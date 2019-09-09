@@ -3,6 +3,18 @@ require("premake", ">=5.0.0-alpha10")
 include "module.lua"
 include "../../TiltedCore/Build/module.lua"
 
+cefDir = "../ThirdParty/CEF/";
+
+if os.isdir(cefDir) == false then
+    print("Downloading CEF dependencies...")
+
+    http.download("https://download.skyrim-together.com/ThirdParty.zip", "ThirdParty.zip")
+   
+    print("Extracting CEF dependencies...")
+    zip.extract("ThirdParty.zip", "..")
+    os.remove("ThirdParty.zip")
+end
+
 workspace ("Tilted UI")
 
     ------------------------------------------------------------------
