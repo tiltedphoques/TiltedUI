@@ -3,108 +3,108 @@
 
 namespace TiltedPhoques
 {
-	OverlayClient::OverlayClient(OverlayRenderHandler* apHandler) noexcept
-		: m_pRenderHandler(apHandler)
-		, m_pLoadHandler(new OverlayLoadHandler)
-		, m_pBrowser(nullptr)
-		, m_pContextMenuHandler(new OverlayContextHandler)
-	{
-		m_cursorPathPNG = L"Data\\Online\\UI\\assets\\images\\cursor.png";
-		m_cursorPathDDS = L"Data\\Online\\UI\\assets\\images\\cursor.dds";
+    OverlayClient::OverlayClient(OverlayRenderHandler* apHandler) noexcept
+        : m_pRenderHandler(apHandler)
+        , m_pLoadHandler(new OverlayLoadHandler)
+        , m_pBrowser(nullptr)
+        , m_pContextMenuHandler(new OverlayContextHandler)
+    {
+        m_cursorPathPNG = L"Data\\Online\\UI\\assets\\images\\cursor.png";
+        m_cursorPathDDS = L"Data\\Online\\UI\\assets\\images\\cursor.dds";
 
-		apHandler->SetParent(this);
-	}
+        apHandler->SetParent(this);
+    }
 
-	CefRefPtr<OverlayRenderHandler> OverlayClient::GetOverlayRenderHandler()
-	{
-		return m_pRenderHandler;
-	}
+    CefRefPtr<OverlayRenderHandler> OverlayClient::GetOverlayRenderHandler()
+    {
+        return m_pRenderHandler;
+    }
 
-	CefRefPtr<CefRenderHandler> OverlayClient::GetRenderHandler()
-	{
-		return m_pRenderHandler;
-	}
+    CefRefPtr<CefRenderHandler> OverlayClient::GetRenderHandler()
+    {
+        return m_pRenderHandler;
+    }
 
-	CefRefPtr<CefLoadHandler> OverlayClient::GetLoadHandler()
-	{
-		return m_pLoadHandler;
-	}
+    CefRefPtr<CefLoadHandler> OverlayClient::GetLoadHandler()
+    {
+        return m_pLoadHandler;
+    }
 
-	CefRefPtr<CefLifeSpanHandler> OverlayClient::GetLifeSpanHandler()
-	{
-		return this;
-	}
+    CefRefPtr<CefLifeSpanHandler> OverlayClient::GetLifeSpanHandler()
+    {
+        return this;
+    }
 
-	CefRefPtr<CefContextMenuHandler> OverlayClient::GetContextMenuHandler()
-	{
-		return m_pContextMenuHandler;
-	}
+    CefRefPtr<CefContextMenuHandler> OverlayClient::GetContextMenuHandler()
+    {
+        return m_pContextMenuHandler;
+    }
 
-	void OverlayClient::SetBrowser(const CefRefPtr<CefBrowser>& aBrowser) noexcept
-	{
-		m_pBrowser = aBrowser;
-	}
+    void OverlayClient::SetBrowser(const CefRefPtr<CefBrowser>& aBrowser) noexcept
+    {
+        m_pBrowser = aBrowser;
+    }
 
-	CefRefPtr<CefBrowser> OverlayClient::GetBrowser() const noexcept
-	{
-		return m_pBrowser;
-	}
+    CefRefPtr<CefBrowser> OverlayClient::GetBrowser() const noexcept
+    {
+        return m_pBrowser;
+    }
 
-	const std::wstring& OverlayClient::GetCursorPathPNG() const noexcept
-	{
-		return m_cursorPathPNG;
-	}
+    const std::wstring& OverlayClient::GetCursorPathPNG() const noexcept
+    {
+        return m_cursorPathPNG;
+    }
 
-	const std::wstring& OverlayClient::GetCursorPathDDS() const noexcept
-	{
-		return m_cursorPathDDS;
-	}
+    const std::wstring& OverlayClient::GetCursorPathDDS() const noexcept
+    {
+        return m_cursorPathDDS;
+    }
 
-	void OverlayClient::Create() const noexcept
-	{
-		if (m_pRenderHandler)
-			m_pRenderHandler->Create();
-	}
+    void OverlayClient::Create() const noexcept
+    {
+        if (m_pRenderHandler)
+            m_pRenderHandler->Create();
+    }
 
-	void OverlayClient::Render() const noexcept
-	{
-		if (m_pRenderHandler)
-			m_pRenderHandler->Render();
-	}
+    void OverlayClient::Render() const noexcept
+    {
+        if (m_pRenderHandler)
+            m_pRenderHandler->Render();
+    }
 
-	void OverlayClient::Reset() const noexcept
-	{
-		if (m_pRenderHandler)
-			m_pRenderHandler->Reset();
-	}
+    void OverlayClient::Reset() const noexcept
+    {
+        if (m_pRenderHandler)
+            m_pRenderHandler->Reset();
+    }
 
-	void OverlayClient::OnAfterCreated(CefRefPtr<CefBrowser> aBrowser)
-	{
-		SetBrowser(aBrowser);
-	}
+    void OverlayClient::OnAfterCreated(CefRefPtr<CefBrowser> aBrowser)
+    {
+        SetBrowser(aBrowser);
+    }
 
-	void OverlayClient::OnBeforeClose(CefRefPtr<CefBrowser> aBrowser)
-	{
-		SetBrowser(nullptr);
-	}
+    void OverlayClient::OnBeforeClose(CefRefPtr<CefBrowser> aBrowser)
+    {
+        SetBrowser(nullptr);
+    }
 
-	bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefProcessId source_process, CefRefPtr<CefProcessMessage> message)
-	{
-		if (message->GetName() == "ui-event")
-		{
-			auto pArguments = message->GetArgumentList();
+    bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefProcessId source_process, CefRefPtr<CefProcessMessage> message)
+    {
+        if (message->GetName() == "ui-event")
+        {
+            auto pArguments = message->GetArgumentList();
 
-			auto eventName = pArguments->GetString(0).ToString();
-			auto eventArgs = pArguments->GetList(1);
+            auto eventName = pArguments->GetString(0).ToString();
+            auto eventArgs = pArguments->GetList(1);
 
-			return true;
-		}
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	bool OverlayClient::IsReady() const
-	{
-		return m_pBrowser && m_pLoadHandler->IsReady();
-	}
+    bool OverlayClient::IsReady() const
+    {
+        return m_pBrowser && m_pLoadHandler->IsReady();
+    }
 }
