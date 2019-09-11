@@ -120,7 +120,7 @@ namespace TiltedPhoques
 		}
 	}
 
-	void OverlayApp::InjectMouseWheel(const uint16_t aX, const uint16_t aY, const uint16_t aDelta, const uint32_t aModifier) const noexcept
+	void OverlayApp::InjectMouseWheel(const uint16_t aX, const uint16_t aY, const int16_t aDelta, const uint32_t aModifier) const noexcept
 	{
 		if (m_pGameClient && m_pGameClient->IsReady())
 		{
