@@ -8,7 +8,7 @@ cefDir = "../ThirdParty/CEF/";
 if os.isdir(cefDir) == false then
     print("Downloading CEF dependencies...")
 
-    http.download("https://download.skyrim-together.com/ThirdParty.zip", "ThirdParty.zip")
+    http.download("https://download.skyrim-together.com/tiltedphoques/public/ThirdParty.zip", "ThirdParty.zip")
    
     print("Extracting CEF dependencies...")
     zip.extract("ThirdParty.zip", "..")
