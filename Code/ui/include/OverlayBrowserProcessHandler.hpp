@@ -4,10 +4,10 @@
 
 namespace TiltedPhoques
 {
-	struct OverlayBrowserProcessHandler : CefBrowserProcessHandler
-	{
-		void OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) override;
+    struct OverlayBrowserProcessHandler : CefBrowserProcessHandler
+    {
+        void OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) override;
 
-		IMPLEMENT_REFCOUNTING(OverlayBrowserProcessHandler);
-	};
+        IMPLEMENT_REFCOUNTING(OverlayBrowserProcessHandler);
+    };
 }
