@@ -1,6 +1,8 @@
 #include <OverlayApp.hpp>
 #include <filesystem>
 
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+
 namespace TiltedPhoques
 {
     OverlayApp::OverlayApp(std::unique_ptr<RenderProvider> apRenderProvider, std::wstring aProcessName) noexcept
@@ -17,8 +19,11 @@ namespace TiltedPhoques
 
         CefMainArgs args(GetModuleHandleA(nullptr));
 
+        WCHAR dllPath[MAX_PATH] = { 0 };
+        GetModuleFileNameW(reinterpret_cast<HINSTANCE>(&__ImageBase), dllPath, std::size(dllPath));
+
         std::error_code ec;
-        const auto currentPath = std::filesystem::current_path(ec);
+        const auto currentPath = std::filesystem::path(dllPath).parent_path();
 
         CefSettings settings;
 
