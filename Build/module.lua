@@ -1,4 +1,17 @@
-function CreateUIProject(basePath, coreBasePath)
+premake.extensions.ui = {}
+
+function ui_parent_path()
+    local str = debug.getinfo(2, "S").source:sub(2)
+    local dir =  str:match("(.*/)"):sub(0,-2)
+    local index = string.find(dir, "/[^/]*$")
+    return dir:sub(0, index)
+end
+
+function ui_generate()
+
+    local basePath = premake.extensions.ui.path
+    local coreBasePath = premake.extensions.core.path
+
     project ("UI")
         kind ("StaticLib")
         language ("C++")
@@ -71,7 +84,11 @@ function CreateUIProject(basePath, coreBasePath)
         }
 end
 
-function CreateUIProcessProject(basePath, coreBasePath)
+function ui_process_generate()
+
+    local basePath = premake.extensions.ui.path
+    local coreBasePath = premake.extensions.core.path
+
     project ("UIProcess")
         kind ("StaticLib")
         language ("C++")
@@ -116,3 +133,23 @@ function CreateUIProcessProject(basePath, coreBasePath)
             "Core"
         }
 end
+
+function ui_generate_all()
+
+    if premake.extensions.ui.generated == true then
+        return
+    end
+
+    group ("Libraries")
+        ui_generate()
+        premake.extensions.core.generate()
+
+    group ("Applications")
+        ui_process_generate()
+
+    premake.extensions.ui.generated = true
+
+end
+
+premake.extensions.ui.path = ui_parent_path()
+premake.extensions.ui.generate = ui_generate_all

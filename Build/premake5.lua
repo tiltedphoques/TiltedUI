@@ -78,8 +78,8 @@ workspace ("Tilted UI")
             includedirs
             {
                 "../Code/tests/include/",
-                "../../TiltedCore/Code/core/include/",
-                "../../TiltedCore/ThirdParty/"
+                premake.extensions.core.path .. "/Code/core/include/",
+                premake.extensions.core.path .. "/ThirdParty/"
             }
 
              files
@@ -93,8 +93,5 @@ workspace ("Tilted UI")
                 "Core"
             }
 
-    group ("Libraries")
-        CreateCoreProject("../../TiltedCore")
-        CreateUIProject("..", "../../TiltedCore")
-        CreateUIProcessProject("..", "../../TiltedCore")
+    premake.extensions.ui.generate()
 
