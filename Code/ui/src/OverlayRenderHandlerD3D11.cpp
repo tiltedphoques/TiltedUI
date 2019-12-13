@@ -121,10 +121,21 @@ namespace TiltedPhoques
                 CreateRenderTexture();
 
             D3D11_MAPPED_SUBRESOURCE mappedResource;
-            m_pContext->Map(m_pTexture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-            const auto pDest = static_cast<uint8_t*>(mappedResource.pData);
-            std::memcpy(pDest, buffer, width * height * 4);
-            m_pContext->Unmap(m_pTexture.Get(), 0);
+            const auto result = m_pContext->Map(m_pTexture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+            if(SUCCEEDED(result))
+            {
+                const auto pDest = static_cast<uint8_t*>(mappedResource.pData);
+                std::memcpy(pDest, buffer, width * height * 4);
+                m_pContext->Unmap(m_pTexture.Get(), 0);
+            }
+            else
+            {
+                // We got no mapping, let's drop the context and reset the texture so that we attempt to create a new one during the next frame
+                m_pContext.Reset();
+                m_pTexture.Reset();
+                m_width = m_height = 0;
+            }
         }
     }
 
