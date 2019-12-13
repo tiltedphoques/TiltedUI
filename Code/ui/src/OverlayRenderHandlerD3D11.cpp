@@ -113,7 +113,7 @@ namespace TiltedPhoques
     void OverlayRenderHandlerD3D11::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
         const RectList& dirtyRects, const void* buffer, int width, int height)
     {
-        if (type == PET_VIEW)
+        if (type == PET_VIEW && m_width == width && m_height == height)
         {
             std::unique_lock<std::mutex> _(m_textureLock);
 
