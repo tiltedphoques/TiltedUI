@@ -142,10 +142,9 @@ function ui_generate_all()
 
     group ("Libraries")
         ui_generate()
-        premake.extensions.core.generate()
-
-    group ("Applications")
         ui_process_generate()
+
+    premake.extensions.core.generate()
 
     premake.extensions.ui.generated = true
 
