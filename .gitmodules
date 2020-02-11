@@ -1,3 +1,6 @@
 [submodule "Libraries/TiltedCore"]
 	path = Libraries/TiltedCore
 	url = https://github.com/yamashi/TiltedCore
+[submodule "ThirdParty/imgui"]
+	path = ThirdParty/imgui
+	url = https://github.com/tiltedphoques/imgui

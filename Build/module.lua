@@ -134,6 +134,32 @@ function ui_process_generate()
         }
 end
 
+function script_imgui_generate()
+local basePath = premake.extensions.ui.path
+
+    project ("imgui")
+        kind ("StaticLib")
+        language ("C++")
+
+        includedirs
+        {
+            basePath .. "/ThirdParty/imgui/",
+        }
+
+        files
+        {
+            basePath .. "/ThirdParty/imgui/*.h",
+            basePath .. "/ThirdParty/imgui/*.cpp",
+			basePath .. "/ThirdParty/imgui/examples/imgui_impl_dx9.cpp",
+			basePath .. "/ThirdParty/imgui/examples/imgui_impl_dx9.h",
+			basePath .. "/ThirdParty/imgui/examples/imgui_impl_dx11.h",
+			basePath .. "/ThirdParty/imgui/examples/imgui_impl_dx11.cpp",
+			basePath .. "/ThirdParty/imgui/examples/imgui_impl_win32.h",
+			basePath .. "/ThirdParty/imgui/examples/imgui_impl_win32.cpp",	
+			
+        }
+end
+
 function ui_generate_all()
 
     if premake.extensions.ui.generated == true then
@@ -143,6 +169,10 @@ function ui_generate_all()
     group ("Libraries")
         ui_generate()
         ui_process_generate()
+		
+	group ("ThirdParty")
+		script_imgui_generate()
+	
 
     premake.extensions.core.generate()
 
