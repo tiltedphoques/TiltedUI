@@ -1,4 +1,7 @@
 steps:
+  - checkout: self
+    submodules: recursive
+
   - script: |
       git clone --recurse-submodules https://github.com/tiltedphoques/TiltedCore.git ../TiltedCore
     displayName: Clone TiltedCore
