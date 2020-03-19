@@ -1,5 +1,9 @@
 #include <OverlayClient.hpp>
 #include <OverlayContextHandler.hpp>
+#include <filesystem>
+#include <iostream>
+
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
 namespace TiltedPhoques
 {
@@ -9,8 +13,14 @@ namespace TiltedPhoques
         , m_pBrowser(nullptr)
         , m_pContextMenuHandler(new OverlayContextHandler)
     {
-        m_cursorPathPNG = L"Data\\Online\\UI\\assets\\images\\cursor.png";
-        m_cursorPathDDS = L"Data\\Online\\UI\\assets\\images\\cursor.dds";
+        WCHAR dllPath[MAX_PATH] = { 0 };
+        GetModuleFileNameW(reinterpret_cast<HINSTANCE>(&__ImageBase), dllPath, std::size(dllPath));
+
+        std::error_code ec;
+        auto currentPath = std::filesystem::path(dllPath).parent_path();
+
+        m_cursorPathPNG = (currentPath / "assets" / "images" / "cursor.png").wstring();
+        m_cursorPathDDS = (currentPath / "assets" / "images" / "cursor.dds").wstring();
 
         apHandler->SetParent(this);
     }
