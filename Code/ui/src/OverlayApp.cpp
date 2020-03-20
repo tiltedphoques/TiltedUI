@@ -1,7 +1,6 @@
 #include <OverlayApp.hpp>
 #include <filesystem>
-
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+#include <Filesystem.hpp>
 
 namespace TiltedPhoques
 {
@@ -19,11 +18,7 @@ namespace TiltedPhoques
 
         CefMainArgs args(GetModuleHandleA(nullptr));
 
-        WCHAR dllPath[MAX_PATH] = { 0 };
-        GetModuleFileNameW(reinterpret_cast<HINSTANCE>(&__ImageBase), dllPath, std::size(dllPath));
-
-        std::error_code ec;
-        const auto currentPath = std::filesystem::path(dllPath).parent_path();
+        const auto currentPath = TiltedPhoques::GetPath();
 
         CefSettings settings;
 
