@@ -30,12 +30,15 @@ namespace TiltedPhoques
         settings.log_severity = LOGSEVERITY_VERBOSE;
         settings.remote_debugging_port = 8384;
 #else
-        settings.log_severity = LOGSEVERITY_DEFAULT;
+        settings.log_severity = LOGSEVERITY_VERBOSE;
 #endif
 
         CefString(&settings.log_file).FromWString(currentPath / L"logs" / L"cef_debug.log");
         CefString(&settings.cache_path).FromWString(currentPath / L"cache");
-
+        CefString(&settings.framework_dir_path).FromWString(currentPath);
+        CefString(&settings.root_cache_path).FromWString(currentPath / L"cache");
+        CefString(&settings.resources_dir_path).FromWString(currentPath);
+        CefString(&settings.locales_dir_path).FromWString(currentPath / L"locales");
         CefString(&settings.browser_subprocess_path).FromWString(currentPath / m_processName);
 
         CefInitialize(args, settings, this, nullptr);
@@ -52,7 +55,7 @@ namespace TiltedPhoques
         CefWindowInfo info;
         info.SetAsWindowless(m_pRenderProvider->GetWindow());
 
-        CefBrowserHost::CreateBrowser(info, m_pGameClient.get(), (currentPath / L"Data" / L"Online" / L"UI" / L"index.html").wstring(), browserSettings, nullptr, nullptr);
+        CefBrowserHost::CreateBrowser(info, m_pGameClient.get(), (currentPath / L"ui" / L"index.html").wstring(), browserSettings, nullptr, nullptr);
     }
 
     void OverlayApp::ExecuteAsync(const std::string& acFunction, const CefRefPtr<CefListValue>& apArguments) const noexcept

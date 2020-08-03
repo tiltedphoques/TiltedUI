@@ -34,8 +34,8 @@ namespace TiltedPhoques
         auto pArgs = CefCommandLine::CreateCommandLine();
         pArgs->InitFromString(acpArgs);
 
-        std::thread t{ ExitCheck, pArgs };
-        t.detach();
+        //std::thread t{ ExitCheck, pArgs };
+        //t.detach();
 
         CefMainArgs mainArgs(aInstance);
         CefRefPtr<OverlayApp> App = new OverlayApp(acFactory);
