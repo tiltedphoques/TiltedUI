@@ -17,33 +17,30 @@ namespace TiltedPhoques
 
     void OverlayRenderHandlerD3D9::Render()
     {
-        if (IsVisible())
+        m_pSprite->Begin(D3DXSPRITE_ALPHABLEND);
+
         {
-            m_pSprite->Begin(D3DXSPRITE_ALPHABLEND);
+            D3DXVECTOR3 pos;
+            pos.x = 0.0f;
+            pos.y = 0.0f;
+            pos.z = 0.0f;
 
-            {
-                D3DXVECTOR3 pos;
-                pos.x = 0.0f;
-                pos.y = 0.0f;
-                pos.z = 0.0f;
+            std::scoped_lock _(m_textureLock);
 
-                std::scoped_lock _(m_textureLock);
-
-                if (m_pTexture)
-                    m_pSprite->Draw(m_pTexture.Get(), nullptr, nullptr, &pos, 0xFFFFFFFF);
-            }
-            if (m_pCursorTexture)
-            {
-                D3DXVECTOR3 pos;
-                pos.x = m_cursorX;
-                pos.y = m_cursorY;
-                pos.z = 0.0f;
-
-                m_pSprite->Draw(m_pCursorTexture.Get(), nullptr, nullptr, &pos, 0xFFFFFFFF);
-            }
-
-            m_pSprite->End();
+            if (m_pTexture)
+                m_pSprite->Draw(m_pTexture.Get(), nullptr, nullptr, &pos, 0xFFFFFFFF);
         }
+        if (m_pCursorTexture)
+        {
+            D3DXVECTOR3 pos;
+            pos.x = m_cursorX;
+            pos.y = m_cursorY;
+            pos.z = 0.0f;
+
+            m_pSprite->Draw(m_pCursorTexture.Get(), nullptr, nullptr, &pos, 0xFFFFFFFF);
+        }
+
+        m_pSprite->End();
     }
 
     void OverlayRenderHandlerD3D9::Reset()

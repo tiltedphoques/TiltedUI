@@ -47,24 +47,21 @@ namespace TiltedPhoques
 
         GetRenderTargetSize();
 
-        if (IsVisible())
+        m_pSpriteBatch->Begin(DirectX::SpriteSortMode_Deferred, m_pStates->NonPremultiplied());
+
         {
-            m_pSpriteBatch->Begin(DirectX::SpriteSortMode_Deferred, m_pStates->NonPremultiplied());
+            std::unique_lock<std::mutex> _(m_textureLock);
 
-            {
-                std::unique_lock<std::mutex> _(m_textureLock);
-
-                if (m_pTextureView)
-                    m_pSpriteBatch->Draw(m_pTextureView.Get(), DirectX::SimpleMath::Vector2(0.f, 0.f), nullptr, DirectX::Colors::White, 0.f);
-            }
-
-            if (m_pCursorTexture)
-            {
-                m_pSpriteBatch->Draw(m_pCursorTexture.Get(), DirectX::SimpleMath::Vector2(m_cursorX, m_cursorY), nullptr, DirectX::Colors::White, 0.f, DirectX::SimpleMath::Vector2(0, 0), m_width / 1920.f);
-            }
-
-            m_pSpriteBatch->End();
+            if (m_pTextureView)
+                m_pSpriteBatch->Draw(m_pTextureView.Get(), DirectX::SimpleMath::Vector2(0.f, 0.f), nullptr, DirectX::Colors::White, 0.f);
         }
+
+        if (m_pCursorTexture)
+        {
+            m_pSpriteBatch->Draw(m_pCursorTexture.Get(), DirectX::SimpleMath::Vector2(m_cursorX, m_cursorY), nullptr, DirectX::Colors::White, 0.f, DirectX::SimpleMath::Vector2(0, 0), m_width / 1920.f);
+        }
+
+        m_pSpriteBatch->End();
     }
 
     void OverlayRenderHandlerD3D11::Reset()

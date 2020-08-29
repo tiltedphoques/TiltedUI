@@ -11,7 +11,7 @@ namespace TiltedPhoques
     {
     }
 
-    void OverlayApp::Initialize() noexcept
+    void OverlayApp::Initialize(OverlayClient* aOverlayClient) noexcept
     {
         if (m_pGameClient)
             return;
@@ -43,7 +43,8 @@ namespace TiltedPhoques
 
         CefInitialize(args, settings, this, nullptr);
 
-        m_pGameClient = new OverlayClient(m_pRenderProvider->Create());
+        // m_pGameClient = new OverlayClient(m_pRenderProvider->Create());
+        m_pGameClient = aOverlayClient;
 
         CefBrowserSettings browserSettings{};
 

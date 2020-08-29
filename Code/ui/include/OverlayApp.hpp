@@ -25,10 +25,11 @@ namespace TiltedPhoques
 
         TP_NOCOPYMOVE(OverlayApp);
 
-        void Initialize() noexcept;
+        void Initialize(OverlayClient* aOverlayClient) noexcept;
         void ExecuteAsync(const std::string& acFunction, const CefRefPtr<CefListValue>& apArguments = nullptr) const noexcept;
 
         [[nodiscard]] OverlayClient* GetClient() const noexcept { return m_pGameClient.get(); };
+        RenderProvider* GetRenderProvider() const noexcept { return m_pRenderProvider.get(); };
 
         void InjectKey(cef_key_event_type_t aType, uint32_t aModifiers, uint16_t aKey, uint16_t aScanCode) const noexcept;
         void InjectMouseButton(uint16_t aX, uint16_t aY, cef_mouse_button_type_t aButton, bool aUp, uint32_t aModifier) const noexcept;
