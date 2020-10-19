@@ -22,8 +22,6 @@ function ui_generate()
             "d3d9.lib",
             "d3d11.lib",
             "d3dx9.lib",
-            "MSVCRT.LIB",
-            "DirectXTK.lib"
         }
 
         includedirs
@@ -66,14 +64,16 @@ function ui_generate()
             links
             {
                 "libcef_r",
-                "libcef_dll_wrapper_r"
+                "libcef_dll_wrapper_r",
+                "DirectXTK_r"
             }
 
         filter { "configurations:*Debug" }
             links
             {
                 "libcef_d",
-                "libcef_dll_wrapper_d"
+                "libcef_dll_wrapper_d",
+                "DirectXTK_d"
             }
 
         filter {}
@@ -155,8 +155,8 @@ local basePath = premake.extensions.ui.path
 			basePath .. "/ThirdParty/imgui/examples/imgui_impl_dx11.h",
 			basePath .. "/ThirdParty/imgui/examples/imgui_impl_dx11.cpp",
 			basePath .. "/ThirdParty/imgui/examples/imgui_impl_win32.h",
-			basePath .. "/ThirdParty/imgui/examples/imgui_impl_win32.cpp",	
-			
+			basePath .. "/ThirdParty/imgui/examples/imgui_impl_win32.cpp",
+
         }
 end
 
@@ -169,10 +169,10 @@ function ui_generate_all()
     group ("Libraries")
         ui_generate()
         ui_process_generate()
-		
+
 	group ("ThirdParty")
 		script_imgui_generate()
-	
+
 
     premake.extensions.core.generate()
 

@@ -26,7 +26,6 @@ workspace ("Tilted UI")
     location ("projects")
     startproject ("Tests")
 
-    staticruntime "On"
     floatingpoint "Fast"
     vectorextensions "SSE2"
     warnings "Extra"

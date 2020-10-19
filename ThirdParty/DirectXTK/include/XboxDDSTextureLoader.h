@@ -23,18 +23,26 @@
 
 #include <d3d11_x.h>
 
-#include <stdint.h>
+#include <cstdint>
+
+#ifndef DDS_ALPHA_MODE_DEFINED
+#define DDS_ALPHA_MODE_DEFINED
+namespace DirectX
+{
+    enum DDS_ALPHA_MODE : uint32_t
+    {
+        DDS_ALPHA_MODE_UNKNOWN = 0,
+        DDS_ALPHA_MODE_STRAIGHT = 1,
+        DDS_ALPHA_MODE_PREMULTIPLIED = 2,
+        DDS_ALPHA_MODE_OPAQUE = 3,
+        DDS_ALPHA_MODE_CUSTOM = 4,
+    };
+}
+#endif
 
 namespace Xbox
 {
-    enum DDS_ALPHA_MODE
-    {
-        DDS_ALPHA_MODE_UNKNOWN       = 0,
-        DDS_ALPHA_MODE_STRAIGHT      = 1,
-        DDS_ALPHA_MODE_PREMULTIPLIED = 2,
-        DDS_ALPHA_MODE_OPAQUE        = 3,
-        DDS_ALPHA_MODE_CUSTOM        = 4,
-    };
+    using DirectX::DDS_ALPHA_MODE;
 
     HRESULT __cdecl CreateDDSTextureFromMemory(
         _In_ ID3D11DeviceX* d3dDevice,
@@ -44,7 +52,7 @@ namespace Xbox
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
         _Outptr_ void** grfxMemory,
         _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr, 
-        _In_ bool forceSRGB = false);
+        _In_ bool forceSRGB = false) noexcept;
 
     HRESULT __cdecl CreateDDSTextureFromFile( _In_ ID3D11DeviceX* d3dDevice,
         _In_z_ const wchar_t* szFileName,
@@ -52,7 +60,7 @@ namespace Xbox
         _Outptr_opt_ ID3D11ShaderResourceView** textureView,
         _Outptr_ void** grfxMemory,
         _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr,
-        _In_ bool forceSRGB = false);
+        _In_ bool forceSRGB = false) noexcept;
 
-    void FreeDDSTextureMemory( _In_opt_ void* grfxMemory );
+    void FreeDDSTextureMemory( _In_opt_ void* grfxMemory ) noexcept;
 }
