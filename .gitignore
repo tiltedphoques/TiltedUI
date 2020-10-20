@@ -6,4 +6,5 @@ Build/obj
 Build/lib
 Build/bin
 ThirdParty/CEF
+ThirdParty/DXSDK
 *__pycache__*
