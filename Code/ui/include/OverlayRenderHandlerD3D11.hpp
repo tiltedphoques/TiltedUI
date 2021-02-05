@@ -1,9 +1,10 @@
 #pragma once
 
-#include <OverlayRenderHandler.hpp>
 #include <wrl.h>
 #include <mutex>
-#include <Signal.hpp>
+
+#include <OverlayRenderHandler.hpp>
+#include <TiltedCore/Signal.hpp>
 
 namespace DirectX
 {

@@ -1,14 +1,14 @@
-#include <OverlayRenderHandlerD3D11.hpp>
-#include <OverlayClient.hpp>
 
 #include <SpriteBatch.h>
 #include <DirectXColors.h>
 #include <SimpleMath.h>
 #include <CommonStates.h>
+
 #include <WICTextureLoader.h>
 #include <DDSTextureLoader.h>
 
-#include <iostream>
+#include <OverlayClient.hpp>
+#include <OverlayRenderHandlerD3D11.hpp>
 
 namespace TiltedPhoques
 {

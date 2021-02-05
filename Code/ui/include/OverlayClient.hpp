@@ -4,7 +4,7 @@
 #include <OverlayLoadHandler.hpp>
 #include <OverlayRenderHandler.hpp>
 
-#include <Meta.hpp>
+#include <TiltedCore/Meta.hpp>
 
 namespace TiltedPhoques
 {
@@ -47,6 +47,5 @@ namespace TiltedPhoques
 
         std::wstring m_cursorPathPNG;
         std::wstring m_cursorPathDDS;
-
     };
 }

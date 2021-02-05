@@ -1,9 +1,8 @@
+
 #include <OverlayClient.hpp>
 #include <OverlayContextHandler.hpp>
 #include <filesystem>
-#include <Filesystem.hpp>
-
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+#include <TiltedCore/Filesystem.hpp>
 
 namespace TiltedPhoques
 {
