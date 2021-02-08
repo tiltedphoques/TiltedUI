@@ -28,9 +28,7 @@ target("TiltedUi")
         "Code/ui/include/", 
         directx_dir .. "/Include", {public = true})
     add_headerfiles("Code/ui/include/*.hpp", {prefixdir = "TiltedUi"})
-    add_syslinks(
-        "dxguid.lib",
-        "d3d11.lib")
+    add_syslinks("dxguid", "d3d11")
     add_packages(
         "tiltedcore",
         "cef",
@@ -53,9 +51,9 @@ target("UiProcess")
         "mimalloc", 
         "hopscotch-map")
     
-target("TiltedUi_Tests")
-    set_kind("binary")
-    set_group("Tests")
-    add_files("Code/tests/src/*.cpp")
-    add_deps("TiltedUi")
-    add_packages("tiltedcore", "catch2", "hopscotch-map")
+--target("TiltedUi_Tests")
+--    set_kind("binary")
+--    set_group("Tests")
+--    add_files("Code/tests/src/*.cpp")
+--    add_deps("TiltedUi")
+--    add_packages("tiltedcore", "catch2", "hopscotch-map")
