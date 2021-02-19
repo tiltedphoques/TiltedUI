@@ -20,12 +20,14 @@ namespace TiltedPhoques
             TP_NOCOPYMOVE(RenderProvider);
         };
 
-        explicit OverlayApp(std::unique_ptr<RenderProvider> apRenderProvider, std::wstring aProcessName = L"tp_process.exe") noexcept;
+        explicit OverlayApp(std::unique_ptr<RenderProvider> apRenderProvider, std::wstring aProcessName = L"TPProcess.exe") noexcept;
         virtual ~OverlayApp() = default;
 
         TP_NOCOPYMOVE(OverlayApp);
 
         void Initialize() noexcept;
+        void Shutdown() noexcept;
+
         void ExecuteAsync(const std::string& acFunction, const CefRefPtr<CefListValue>& apArguments = nullptr) const noexcept;
 
         [[nodiscard]] OverlayClient* GetClient() const noexcept { return m_pGameClient.get(); };

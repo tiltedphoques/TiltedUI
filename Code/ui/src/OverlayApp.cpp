@@ -16,12 +16,11 @@ namespace TiltedPhoques
         if (m_pGameClient)
             return;
 
-        CefMainArgs args(GetModuleHandleA(nullptr));
+        CefMainArgs args(GetModuleHandleW(nullptr));
 
         const auto currentPath = TiltedPhoques::GetPath();
 
         CefSettings settings;
-
         settings.no_sandbox = true;
         settings.multi_threaded_message_loop = true;
         settings.windowless_rendering_enabled = true;
@@ -56,6 +55,11 @@ namespace TiltedPhoques
         info.SetAsWindowless(m_pRenderProvider->GetWindow());
 
         CefBrowserHost::CreateBrowser(info, m_pGameClient.get(), (currentPath / L"ui" / L"index.html").wstring(), browserSettings, nullptr, nullptr);
+    }
+
+    void OverlayApp::Shutdown() noexcept
+    {
+      CefShutdown();
     }
 
     void OverlayApp::ExecuteAsync(const std::string& acFunction, const CefRefPtr<CefListValue>& apArguments) const noexcept
