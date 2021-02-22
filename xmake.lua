@@ -2,13 +2,12 @@ set_languages("cxx17")
 set_xmakever("2.5.1")
 
 add_requires(
-    "tiltedcore", 
+    "tiltedcore",
     "catch2",
     "mimalloc",
-    "directxtk", 
-    "cef", 
-    "hopscotch-map", 
-    {configs = {rltgenrandom = true }})
+    "directxtk",
+    "cef",
+    "hopscotch-map")
 
 add_rules("mode.debug","mode.releasedbg", "mode.release")
 add_rules("plugin.vsxmake.autoupdate")
@@ -25,15 +24,15 @@ target("TiltedUi")
     set_group("Libraries")
     add_files("Code/ui/src/*.cpp")
     add_includedirs(
-        "Code/ui/include/", 
+        "Code/ui/include/",
         directx_dir .. "/Include", {public = true})
     add_headerfiles("Code/ui/include/*.hpp", {prefixdir = "TiltedUi"})
     add_syslinks("dxguid", "d3d11")
     add_packages(
         "tiltedcore",
         "cef",
-        "directxtk", 
-        "mimalloc", 
+        "directxtk",
+        "mimalloc",
         "hopscotch-map")
     add_linkdirs(directx_dir .. "/Lib/x64")
 
@@ -47,10 +46,10 @@ target("UiProcess")
         {public = true})
     add_packages(
         "tiltedcore",
-        "cef", 
-        "mimalloc", 
+        "cef",
+        "mimalloc",
         "hopscotch-map")
-    
+
 --target("TiltedUi_Tests")
 --    set_kind("binary")
 --    set_group("Tests")
