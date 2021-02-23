@@ -6,8 +6,6 @@
 
 #include <WICTextureLoader.h>
 #include <DDSTextureLoader.h>
-
-#include "UIClient.hpp"
 #include "UIViewD3D11.hpp"
 
 namespace TiltedPhoques
@@ -44,7 +42,7 @@ namespace TiltedPhoques
 
         // First of all we flush our deferred context in case we have updated the texture
         {
-            std::unique_lock<std::mutex> _(m_textureLock);
+            std::unique_lock<std::mutex> _(m_viewLock);
 
             Microsoft::WRL::ComPtr<ID3D11CommandList> pCommandList;
             const auto result = m_pContext->FinishCommandList(FALSE, &pCommandList);
@@ -62,7 +60,7 @@ namespace TiltedPhoques
             m_pSpriteBatch->Begin(DirectX::SpriteSortMode_Deferred, m_pStates->NonPremultiplied());
 
             {
-                std::unique_lock<std::mutex> _(m_textureLock);
+                std::unique_lock<std::mutex> _(m_viewLock);
 
                 if (m_pTextureView)
                     m_pSpriteBatch->Draw(m_pTextureView.Get(), DirectX::SimpleMath::Vector2(0.f, 0.f), nullptr, DirectX::Colors::White, 0.f);
@@ -109,7 +107,7 @@ namespace TiltedPhoques
         }
 #endif
 
-        std::unique_lock<std::mutex> _(m_textureLock);
+        std::unique_lock<std::mutex> _(m_viewLock);
 
         if (!m_pTexture)
             CreateRenderTexture();
@@ -125,9 +123,12 @@ namespace TiltedPhoques
     void UIViewD3D11::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
         const RectList& dirtyRects, const void* buffer, int width, int height)
     {
-        if ((type == PET_VIEW && m_width == width && m_height == height) || type == PET_POPUP)
+        if (!m_bShouldWork)
+            return;
+
+        if ((type == PET_VIEW && m_width == width && m_height == height))
         {
-            std::unique_lock<std::mutex> _(m_textureLock);
+            std::unique_lock<std::mutex> _(m_viewLock);
 
             if (!m_pTexture)
                 CreateRenderTexture();
@@ -178,13 +179,13 @@ namespace TiltedPhoques
                     m_createLock.unlock();
 
                     {
-                        std::unique_lock<std::mutex> _(m_textureLock);
+                        std::unique_lock<std::mutex> _(m_viewLock);
 
                         m_pTexture.Reset();
                         m_pTextureView.Reset();
                     }
 
-                    m_pClient->GetBrowser()->GetHost()->WasResized();
+                    GetBrowser()->GetHost()->WasResized();
                 }
             }
         }

@@ -3,8 +3,6 @@
 #include <mutex>
 #include <TiltedCore/Meta.hpp>
 #include <include/cef_app.h>
-
-#include "UIClient.hpp"
 #include "UIView.hpp"
 
 namespace TiltedPhoques
@@ -36,8 +34,6 @@ namespace TiltedPhoques
         // this is best not to be called manually since the dtor can ensure
         // proper shutdown order
         void Shutdown() noexcept;
-
-        static void PumpMessageLoop() noexcept;
 
         void DoDrawCommand(DrawCommand aCommand) noexcept;
 

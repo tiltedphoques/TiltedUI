@@ -35,7 +35,7 @@ namespace TiltedPhoques
 
         CefSettings settings;
         settings.no_sandbox = true;
-        settings.multi_threaded_message_loop = false;
+        settings.multi_threaded_message_loop = true;
         settings.windowless_rendering_enabled = true;
 #ifdef DEBUG
         settings.log_severity = LOGSEVERITY_VERBOSE;
@@ -69,11 +69,6 @@ namespace TiltedPhoques
 
             m_bReady = false;
         }
-    }
-
-    void UIApp::PumpMessageLoop() noexcept
-    {
-        CefDoMessageLoopWork();
     }
 
     void UIApp::RegisterView(UIView *apFrame) noexcept

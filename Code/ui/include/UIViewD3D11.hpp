@@ -54,13 +54,12 @@ namespace TiltedPhoques
         void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override;
         void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, const void* buffer, int width, int height) override;
 
-        uint32_t m_width{ 0 };
-        uint32_t m_height{ 0 };
+        uint32_t m_width{ 1280 };
+        uint32_t m_height{ 720 };
 
         Microsoft::WRL::ComPtr<ID3D11Texture2D> m_pTexture;
         Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pCursorTexture;
         Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pTextureView;
-        std::mutex m_textureLock;
         std::mutex m_createLock;
 
         Microsoft::WRL::ComPtr<ID3D11Device> m_pDevice;
