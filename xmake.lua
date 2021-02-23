@@ -6,6 +6,7 @@ add_requires(
     "catch2",
     "mimalloc",
     "directxtk",
+    "glm",
     "cef",
     "hopscotch-map")
 
@@ -31,6 +32,7 @@ target("TiltedUi")
     add_packages(
         "tiltedcore",
         "cef",
+        "glm",
         "directxtk",
         "mimalloc",
         "hopscotch-map")

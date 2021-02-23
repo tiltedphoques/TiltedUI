@@ -3,8 +3,9 @@
 #include <wrl.h>
 #include <mutex>
 
-#include <OverlayRenderHandler.hpp>
 #include <TiltedCore/Signal.hpp>
+#include <cef_render_handler.h>
+#include "UIView.hpp"
 
 namespace DirectX
 {
@@ -20,8 +21,9 @@ struct ID3D11Device;
 
 namespace TiltedPhoques
 {
-    struct OverlayRenderHandlerD3D11 : OverlayRenderHandler
+    class UIViewD3D11 final : public UIView
     {
+    public:
         struct Renderer
         {
             Renderer() = default;
@@ -31,26 +33,27 @@ namespace TiltedPhoques
             TP_NOCOPYMOVE(Renderer);
         };
 
-        explicit OverlayRenderHandlerD3D11(Renderer* apRenderer) noexcept;
-        virtual ~OverlayRenderHandlerD3D11();
+        // regular constructor
+        UIViewD3D11(Renderer* apRenderer) noexcept;
+        UIViewD3D11(IDXGISwapChain* apSwapchain, ID3D11Texture2D* apCustomTexture = nullptr) noexcept;
 
-        TP_NOCOPYMOVE(OverlayRenderHandlerD3D11);
+        ~UIViewD3D11();
 
         void Create() override;
         void Render() override;
         void Reset() override;
 
-        void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override;
-        void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, const void* buffer, int width, int height) override;
-
-        IMPLEMENT_REFCOUNTING(OverlayRenderHandlerD3D11);
-
+        //TP_NOCOPYMOVE(UIViewD3D11);
+        IMPLEMENT_REFCOUNTING(UIViewD3D11);
     protected:
 
         void GetRenderTargetSize();
         void CreateRenderTexture();
-
     private:
+        // impl: CefRenderHandler
+        void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override;
+        void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, const void* buffer, int width, int height) override;
+
         uint32_t m_width{ 0 };
         uint32_t m_height{ 0 };
 
@@ -59,7 +62,6 @@ namespace TiltedPhoques
         Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pTextureView;
         std::mutex m_textureLock;
         std::mutex m_createLock;
-        Renderer* m_pRenderer;
 
         Microsoft::WRL::ComPtr<ID3D11Device> m_pDevice;
         Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_pContext;
