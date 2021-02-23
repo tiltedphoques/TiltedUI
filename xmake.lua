@@ -4,7 +4,6 @@ set_xmakever("2.5.1")
 add_requires(
     "tiltedcore",
     "catch2",
-    "mimalloc",
     "directxtk",
     "cef",
     "hopscotch-map")
@@ -23,9 +22,7 @@ target("TiltedUi")
     set_kind("static")
     set_group("Libraries")
     add_files("Code/ui/src/*.cpp")
-    add_includedirs(
-        "Code/ui/include/",
-        directx_dir .. "/Include", {public = true})
+    add_includedirs("Code/ui/include/", {public = true})
     add_headerfiles("Code/ui/include/*.hpp", {prefixdir = "TiltedUi"})
     add_syslinks("dxguid", "d3d11")
     add_packages(
@@ -34,16 +31,13 @@ target("TiltedUi")
         "directxtk",
         "mimalloc",
         "hopscotch-map")
-    add_linkdirs(directx_dir .. "/Lib/x64")
 
 target("UiProcess")
     set_kind("static")
     set_group("Libraries")
     add_files("Code/ui_process/src/*.cpp")
     add_headerfiles("Code/ui_process/include/*.hpp", {prefixdir = "UiProcess"})
-    add_includedirs(
-        "Code/ui_process/include/",
-        {public = true})
+    add_includedirs("Code/ui_process/include/", {public = true})
     add_packages(
         "tiltedcore",
         "cef",
