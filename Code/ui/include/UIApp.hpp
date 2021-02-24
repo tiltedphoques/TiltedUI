@@ -19,13 +19,6 @@ namespace TiltedPhoques
     {
         friend class UIView;
     public:
-        enum class DrawCommand
-        {
-            kRender,
-            kCreate,
-            kReset
-        };
-
         UIApp() noexcept;
         ~UIApp();
 
@@ -35,16 +28,16 @@ namespace TiltedPhoques
         // proper shutdown order
         void Shutdown() noexcept;
 
-        void DoDrawCommand(DrawCommand aCommand) noexcept;
+        void DrawFrames() noexcept;
 
-        UIView* FindView(const CefString& aName) noexcept;
+        CefRefPtr<UIView> FindView(const CefString& aName) noexcept;
 
         TP_NOCOPYMOVE(UIApp);
         IMPLEMENT_REFCOUNTING(UIApp);
     private:
         // a frame needs to be registered to be updated
         void RegisterView(UIView *apView) noexcept;
-        void UnregisterView(UIView *apView) noexcept;
+        void RemoveView(UIView *apView) noexcept;
     private:
         // impl CefApp
         CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override { return this; }
@@ -60,7 +53,7 @@ namespace TiltedPhoques
 
         bool m_bReady = false;
         std::mutex m_FrameBucketLock;
-        std::vector<UIView*> m_Frames;
+        std::vector<UIView*> m_viewBucket;
     };
 
     UIApp* GetUiApplication();

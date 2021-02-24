@@ -76,56 +76,43 @@ namespace TiltedPhoques
         std::lock_guard lock(m_FrameBucketLock);
         TP_UNUSED(lock);
 
-        m_Frames.push_back(apFrame);
+        m_viewBucket.push_back(apFrame);
     }
 
-    void UIApp::UnregisterView(UIView* apFrame) noexcept
+    void UIApp::RemoveView(UIView* apView) noexcept
     {
         std::lock_guard lock(m_FrameBucketLock);
         TP_UNUSED(lock);
 
         // isn't modern c++ a joy to read :D
-        auto it = std::find_if(m_Frames.begin(), m_Frames.end(), [&](UIView* apItem) {
-            return apFrame == apItem;
+        auto it = std::find_if(m_viewBucket.begin(), m_viewBucket.end(), [&](auto* apItem) {
+            return apView == apItem;
         });
 
-        if (it != m_Frames.end())
-            m_Frames.erase(it);
+        if (it != m_viewBucket.end())
+            m_viewBucket.erase(it);
     }
 
-    UIView* UIApp::FindView(const CefString &aName) noexcept
+    CefRefPtr<UIView> UIApp::FindView(const CefString &aName) noexcept
     {
         std::lock_guard lock(m_FrameBucketLock);
         TP_UNUSED(lock);
 
-        auto it = std::find_if(m_Frames.begin(), m_Frames.end(), [&](UIView* apItem) {
+        auto it = std::find_if(m_viewBucket.begin(), m_viewBucket.end(), [&](auto* apItem) {
             return aName == apItem->GetName();
         });
 
-        if (it != m_Frames.end())
+        if (it != m_viewBucket.end())
             return *it;
 
         return nullptr;
     }
 
-    void UIApp::DoDrawCommand(DrawCommand aCommand) noexcept
+    void UIApp::DrawFrames() noexcept
     {
-        for (const auto& frame : m_Frames)
+        for (auto* e : m_viewBucket)
         {
-            switch (aCommand)
-            {
-            case DrawCommand::kRender:
-                frame->Render();
-                break;
-            case DrawCommand::kCreate:
-                frame->Create();
-                break;
-            case DrawCommand::kReset:
-                frame->Reset();
-                break;
-            default:
-                break;
-            }
+            e->Render();
         }
     }
 

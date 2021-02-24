@@ -31,6 +31,9 @@ namespace TiltedPhoques
 
     void UIViewD3D11::Render()
     {
+        if (!m_bBeingKilled)
+            return;
+
         // We need contexts first
         if (!m_pImmediateContext || !m_pContext)
         {
@@ -117,16 +120,16 @@ namespace TiltedPhoques
     {
         std::scoped_lock _(m_createLock);
 
-        rect = CefRect(0, 0, m_width, m_height);
+        rect = CefRect(0, 0, m_Size.x, m_Size.y);
     }
 
     void UIViewD3D11::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
         const RectList& dirtyRects, const void* buffer, int width, int height)
     {
-        if (!m_bShouldWork)
+        if (!m_bBeingKilled)
             return;
 
-        if ((type == PET_VIEW && m_width == width && m_height == height))
+        if ((type == PET_VIEW && m_Size == glm::uvec2(width, height)))
         {
             std::unique_lock<std::mutex> _(m_viewLock);
 
@@ -147,7 +150,7 @@ namespace TiltedPhoques
                 // We got no mapping, let's drop the context and reset the texture so that we attempt to create a new one during the next frame
                 m_pContext.Reset();
                 m_pTexture.Reset();
-                m_width = m_height = 0;
+                m_Size = {};
             }
         }
     }
@@ -170,10 +173,10 @@ namespace TiltedPhoques
                 D3D11_TEXTURE2D_DESC desc;
                 pSrcBuffer->GetDesc(&desc);
 
-                if (m_width != desc.Width || m_height != desc.Height)
+                const auto geom = glm::uvec2(desc.Width, desc.Height);
+                if (geom != m_Size)
                 {
-                    m_width = desc.Width;
-                    m_height = desc.Height;
+                    m_Size = geom;
 
                     // We now know the size of the viewport, we can let CEF get it
                     m_createLock.unlock();
@@ -194,8 +197,8 @@ namespace TiltedPhoques
     void UIViewD3D11::CreateRenderTexture()
     {
         D3D11_TEXTURE2D_DESC textDesc;
-        textDesc.Width = m_width;
-        textDesc.Height = m_height;
+        textDesc.Width = m_Size.x;
+        textDesc.Height = m_Size.y;
         textDesc.MipLevels = textDesc.ArraySize = 1;
         textDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
         textDesc.SampleDesc.Count = 1;

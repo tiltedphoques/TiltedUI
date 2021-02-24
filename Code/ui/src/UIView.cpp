@@ -23,23 +23,9 @@ namespace TiltedPhoques
         if (!appInstance)
             __debugbreak();
 
-        m_viewLock.lock();
-        m_bShouldWork = false;
+        appInstance->RemoveView(this);
 
-        if (m_pBrowser && m_pBrowser->GetHost())
-        {
-            if (!CefCurrentlyOn(TID_UI))
-            {
-                CefPostTask(TID_UI, base::Bind(&DoCloseBrowser, GetBrowser()));
-            }
-            else
-            {
-                m_pBrowser->GetHost()->CloseBrowser(true);
-            }
-        }
-
-        m_viewLock.unlock();
-        appInstance->UnregisterView(this);
+        KillBrowser();
     }
 
     bool UIView::OpenUrl(const std::string_view url, HWND aHwnd)
@@ -60,9 +46,28 @@ namespace TiltedPhoques
         auto ctx = CefRequestContext::GetGlobalContext();
         bool result =  CefBrowserHost::CreateBrowser(info, this, CefString(url.data()), settings, nullptr, ctx);
 
-        SetVisible(true);
-
         return result;
+    }
+
+    void UIView::KillBrowser()
+    {
+        m_viewLock.lock();
+        m_bBeingKilled = true;
+
+        if (m_pBrowser && m_pBrowser->GetHost())
+        {
+            if (!CefCurrentlyOn(TID_UI))
+            {
+                CefPostTask(TID_UI, base::Bind(&DoCloseBrowser, m_pBrowser));
+            }
+            else
+            {
+                m_pBrowser->GetHost()->CloseBrowser(true);
+            }
+
+            //m_pBrowser = nullptr;
+        }
+        m_viewLock.unlock();
     }
 
     void UIView::SetVisible(bool aToggle)
@@ -99,16 +104,14 @@ namespace TiltedPhoques
     void UIView::OnAfterCreated(CefRefPtr<CefBrowser> aBrowser)
     {
         m_pBrowser = aBrowser;
+
+        // now we have something to show
+        SetVisible(true);
     }
 
     void UIView::OnBeforeClose(CefRefPtr<CefBrowser> aBrowser)
     {
         m_pBrowser = {};
-    }
-
-    bool UIView::DoClose(CefRefPtr<CefBrowser> browser)
-    {
-        return false;
     }
 
     void UIView::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, TransitionType transitionType)

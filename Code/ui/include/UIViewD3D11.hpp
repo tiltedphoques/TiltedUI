@@ -2,6 +2,7 @@
 
 #include <wrl.h>
 #include <mutex>
+#include <glm/vec2.hpp>
 
 #include <TiltedCore/Signal.hpp>
 #include <cef_render_handler.h>
@@ -54,10 +55,13 @@ namespace TiltedPhoques
         void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override;
         void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, const void* buffer, int width, int height) override;
 
-        uint32_t m_width{ 1280 };
-        uint32_t m_height{ 720 };
+        // default to that size:
+        glm::uvec2 m_Size = { 1280, 720 };
+        bool m_customForce = false;
 
         Microsoft::WRL::ComPtr<ID3D11Texture2D> m_pTexture;
+        ID3D11Texture2D* m_pForceTexture = nullptr;
+
         Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pCursorTexture;
         Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pTextureView;
         std::mutex m_createLock;

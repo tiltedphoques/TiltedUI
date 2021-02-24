@@ -36,6 +36,8 @@ namespace TiltedPhoques
         virtual void* GetTextureHandle() { return nullptr; }
 
         CefString& GetName() noexcept;
+
+        void KillBrowser();
     private:
         // impl: CefClient
         CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() override { return this; }
@@ -45,7 +47,6 @@ namespace TiltedPhoques
         // impl: CefLifeSpanHandler
         void OnAfterCreated(CefRefPtr<CefBrowser> aBrowser) override;
         void OnBeforeClose(CefRefPtr<CefBrowser> aBrowser) override;
-        bool DoClose(CefRefPtr<CefBrowser> browser) override;
         // impl: CefContextMenuHandler
         void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefContextMenuParams> params, CefRefPtr<CefMenuModel> model) override;
         // impl: CefClient
@@ -58,11 +59,11 @@ namespace TiltedPhoques
     protected:
         CefRefPtr<CefBrowser> m_pBrowser;
 
-        CefString m_name;
-        bool m_bVisible = true;
-        bool m_bMainFrame = false;
-        bool m_bShouldWork = true;
+        bool m_bVisible = false;
+        bool m_bBeingKilled = false;
+        bool m_bIsMainView = false;
 
+        CefString m_name;
         std::mutex m_viewLock;
     };
 }
