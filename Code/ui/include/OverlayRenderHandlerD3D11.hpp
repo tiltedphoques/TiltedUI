@@ -51,8 +51,8 @@ namespace TiltedPhoques
         void CreateRenderTexture();
 
     private:
-        uint32_t m_width{ 0 };
-        uint32_t m_height{ 0 };
+        uint32_t m_width{ 1920 };
+        uint32_t m_height{ 1080 };
 
         Microsoft::WRL::ComPtr<ID3D11Texture2D> m_pTexture;
         Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pCursorTexture;

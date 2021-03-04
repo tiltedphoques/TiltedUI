@@ -4,18 +4,18 @@
 
 namespace TiltedPhoques
 {
-    OverlayApp::OverlayApp(std::unique_ptr<RenderProvider> apRenderProvider, std::wstring aProcessName) noexcept
+    OverlayApp::OverlayApp(RenderProvider *apRenderProvider, OverlayClient *apCustomClient, std::wstring aProcessName) noexcept
         : m_pBrowserProcessHandler(new OverlayBrowserProcessHandler)
-        , m_pRenderProvider(std::move(apRenderProvider))
+        , m_pRenderProvider(apRenderProvider)
         , m_processName(std::move(aProcessName))
     {
+        if (apCustomClient)
+            m_pClient = apCustomClient;
+
     }
 
-    void OverlayApp::Initialize() noexcept
+    bool OverlayApp::Initialize() noexcept
     {
-        if (m_pGameClient)
-            return;
-
         CefMainArgs args(GetModuleHandleW(nullptr));
 
         const auto currentPath = TiltedPhoques::GetPath();
@@ -42,29 +42,31 @@ namespace TiltedPhoques
 
         CefInitialize(args, settings, this, nullptr);
 
-        m_pGameClient = new OverlayClient(m_pRenderProvider->Create());
+        if (!m_pClient)
+            m_pClient = new OverlayClient(m_pRenderProvider->Create());
 
         CefBrowserSettings browserSettings{};
 
         browserSettings.file_access_from_file_urls = STATE_ENABLED;
         browserSettings.universal_access_from_file_urls = STATE_ENABLED;
         browserSettings.web_security = STATE_DISABLED;
-        browserSettings.windowless_frame_rate = 60;
+        browserSettings.windowless_frame_rate = 240;
 
         CefWindowInfo info;
         info.SetAsWindowless(m_pRenderProvider->GetWindow());
 
-        CefBrowserHost::CreateBrowser(info, m_pGameClient.get(), (currentPath / L"ui" / L"index.html").wstring(), browserSettings, nullptr, nullptr);
+        return CefBrowserHost::CreateBrowser(info, m_pClient.get(),
+            (currentPath / L"ui" / L"index.html").wstring(), browserSettings, nullptr, nullptr);
     }
 
     void OverlayApp::Shutdown() noexcept
     {
-      CefShutdown();
+        CefShutdown();
     }
 
     void OverlayApp::ExecuteAsync(const std::string& acFunction, const CefRefPtr<CefListValue>& apArguments) const noexcept
     {
-        if (!m_pGameClient)
+        if (!m_pClient)
             return;
 
         auto pMessage = CefProcessMessage::Create("browser-event");
@@ -75,7 +77,7 @@ namespace TiltedPhoques
         pArguments->SetString(0, acFunction);
         pArguments->SetList(1, pFunctionArguments);
 
-        auto pBrowser = m_pGameClient->GetBrowser();
+        auto pBrowser = m_pClient->GetBrowser();
         if (pBrowser)
         {
             pBrowser->GetMainFrame()->SendProcessMessage(PID_RENDERER, pMessage);
@@ -84,7 +86,7 @@ namespace TiltedPhoques
 
     void OverlayApp::InjectKey(const cef_key_event_type_t aType, const uint32_t aModifiers, const uint16_t aKey, const uint16_t aScanCode) const noexcept
     {
-        if (m_pGameClient && m_pGameClient->IsReady())
+        if (m_pClient && m_pClient->IsReady())
         {
             CefKeyEvent ev;
 
@@ -93,13 +95,13 @@ namespace TiltedPhoques
             ev.windows_key_code = aKey;
             ev.native_key_code = aScanCode;
 
-            m_pGameClient->GetBrowser()->GetHost()->SendKeyEvent(ev);
+            m_pClient->GetBrowser()->GetHost()->SendKeyEvent(ev);
         }
     }
 
     void OverlayApp::InjectMouseButton(const uint16_t aX, const uint16_t aY, const cef_mouse_button_type_t aButton, const bool aUp, const uint32_t aModifier) const noexcept
     {
-        if (m_pGameClient && m_pGameClient->IsReady())
+        if (m_pClient && m_pClient->IsReady())
         {
             CefMouseEvent ev;
 
@@ -107,13 +109,13 @@ namespace TiltedPhoques
             ev.y = aY;
             ev.modifiers = aModifier;
 
-            m_pGameClient->GetBrowser()->GetHost()->SendMouseClickEvent(ev, aButton, aUp, 1);
+            m_pClient->GetBrowser()->GetHost()->SendMouseClickEvent(ev, aButton, aUp, 1);
         }
     }
 
     void OverlayApp::InjectMouseMove(const uint16_t aX, const uint16_t aY, const uint32_t aModifier) const noexcept
     {
-        if (m_pGameClient && m_pGameClient->IsReady())
+        if (m_pClient && m_pClient->IsReady())
         {
             CefMouseEvent ev;
 
@@ -121,15 +123,15 @@ namespace TiltedPhoques
             ev.y = aY;
             ev.modifiers = aModifier;
 
-            m_pGameClient->GetOverlayRenderHandler()->SetCursorLocation(aX, aY);
+            m_pClient->GetOverlayRenderHandler()->SetCursorLocation(aX, aY);
 
-            m_pGameClient->GetBrowser()->GetHost()->SendMouseMoveEvent(ev, false);
+            m_pClient->GetBrowser()->GetHost()->SendMouseMoveEvent(ev, false);
         }
     }
 
     void OverlayApp::InjectMouseWheel(const uint16_t aX, const uint16_t aY, const int16_t aDelta, const uint32_t aModifier) const noexcept
     {
-        if (m_pGameClient && m_pGameClient->IsReady())
+        if (m_pClient && m_pClient->IsReady())
         {
             CefMouseEvent ev;
 
@@ -137,7 +139,7 @@ namespace TiltedPhoques
             ev.y = aY;
             ev.modifiers = aModifier;
 
-            m_pGameClient->GetBrowser()->GetHost()->SendMouseWheelEvent(ev, 0, aDelta);
+            m_pClient->GetBrowser()->GetHost()->SendMouseWheelEvent(ev, 0, aDelta);
         }
     }
 
