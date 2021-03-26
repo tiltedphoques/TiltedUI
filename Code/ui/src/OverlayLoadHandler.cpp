@@ -18,9 +18,7 @@ namespace TiltedPhoques
         }
     }
 
-    bool OverlayLoadHandler::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-        CefLoadHandler::ErrorCode errorCode, const CefString& failedUrl, CefString& errorText)
+    void OverlayLoadHandler::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, ErrorCode errorCode, const CefString& errorText, const CefString& failedUrl)
     {
-        return false;
     }
 }
