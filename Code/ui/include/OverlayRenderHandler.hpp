@@ -39,7 +39,7 @@ namespace TiltedPhoques
 
     protected:
 
-        bool m_visible{ true };
+        bool m_visible{ false };
         uint16_t m_cursorX{ 0 };
         uint16_t m_cursorY{ 0 };
         OverlayClient* m_pParent{ nullptr };
