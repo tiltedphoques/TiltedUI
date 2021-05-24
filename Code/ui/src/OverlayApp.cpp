@@ -15,7 +15,7 @@ namespace TiltedPhoques
 
     }
 
-    bool OverlayApp::Initialize() noexcept
+    bool OverlayApp::Initialize(const std::string& acPath) noexcept
     {
         CefMainArgs args(GetModuleHandleW(nullptr));
 
@@ -56,7 +56,7 @@ namespace TiltedPhoques
         info.SetAsWindowless(m_pRenderProvider->GetWindow());
 
         const auto ret = CefBrowserHost::CreateBrowser(info, m_pClient.get(),
-            (currentPath / L"ui" / L"index.html").wstring(), browserSettings, nullptr, nullptr);
+            (currentPath / L"UI" / acPath / L"index.html").wstring(), browserSettings, nullptr, nullptr);
 
         return ret;
     }
