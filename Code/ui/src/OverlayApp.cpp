@@ -48,8 +48,6 @@ namespace TiltedPhoques
 
         CefBrowserSettings browserSettings{};
 
-        browserSettings.file_access_from_file_urls = STATE_ENABLED;
-        browserSettings.universal_access_from_file_urls = STATE_ENABLED;
         browserSettings.windowless_frame_rate = 240;
 
         CefWindowInfo info;
@@ -151,5 +149,7 @@ namespace TiltedPhoques
 
     void OverlayApp::OnBeforeCommandLineProcessing(const CefString& aProcessType, CefRefPtr<CefCommandLine> aCommandLine)
     {
+        aCommandLine->AppendSwitch("allow-file-access-from-files");
+        aCommandLine->AppendSwitch("allow-universal-access-from-files");
     }
 }
