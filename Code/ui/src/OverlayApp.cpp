@@ -26,12 +26,13 @@ namespace TiltedPhoques
         settings.multi_threaded_message_loop = true;
         settings.windowless_rendering_enabled = true;
 
-#ifdef DEBUG
+        // TODO(cosideci): properly check debug mode for releasedbg
+//#ifdef DEBUG
         settings.log_severity = LOGSEVERITY_VERBOSE;
         settings.remote_debugging_port = 8384;
-#else
-        settings.log_severity = LOGSEVERITY_VERBOSE;
-#endif
+//#else
+        //settings.log_severity = LOGSEVERITY_VERBOSE;
+//#endif
 
         CefString(&settings.log_file).FromWString(currentPath / L"logs" / L"cef_debug.log");
         CefString(&settings.cache_path).FromWString(currentPath / L"cache");
