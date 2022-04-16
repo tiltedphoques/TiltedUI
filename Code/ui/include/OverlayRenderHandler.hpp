@@ -21,6 +21,16 @@ namespace TiltedPhoques
             return m_visible;
         }
 
+        void SetCursorVisible(const bool aVisible) noexcept
+        {
+            m_isCursorVisible = aVisible;
+        }
+
+        [[nodiscard]] bool IsCursorVisible() const noexcept
+        {
+            return m_isCursorVisible;
+        }
+
         void SetCursorLocation(const uint16_t aX, const uint16_t aY) noexcept
         {
             m_cursorX = aX;
@@ -36,10 +46,10 @@ namespace TiltedPhoques
         {
             m_pParent = apParent;
         }
-
     protected:
 
         bool m_visible{ false };
+        bool m_isCursorVisible{ false };
         uint16_t m_cursorX{ 0 };
         uint16_t m_cursorY{ 0 };
         OverlayClient* m_pParent{ nullptr };

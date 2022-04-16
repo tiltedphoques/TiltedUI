@@ -58,7 +58,7 @@ namespace TiltedPhoques
                     m_pSpriteBatch->Draw(m_pTextureView.Get(), DirectX::SimpleMath::Vector2(0.f, 0.f), nullptr, DirectX::Colors::White, 0.f);
             }
 
-            if (m_pCursorTexture)
+            if (IsCursorVisible() && m_pCursorTexture)
             {
                 m_pSpriteBatch->Draw(m_pCursorTexture.Get(), DirectX::SimpleMath::Vector2(m_cursorX, m_cursorY), nullptr, DirectX::Colors::White, 0.f, DirectX::SimpleMath::Vector2(0, 0), m_width / 1920.f);
             }
