@@ -34,7 +34,7 @@ namespace TiltedPhoques
 
         // First of all we flush our deferred context in case we have updated the texture
         {
-            std::unique_lock<std::mutex> _(m_textureLock);
+            std::unique_lock _(m_textureLock);
 
             Microsoft::WRL::ComPtr<ID3D11CommandList> pCommandList;
             const auto result = m_pContext->FinishCommandList(FALSE, &pCommandList);
@@ -69,6 +69,16 @@ namespace TiltedPhoques
 
     void OverlayRenderHandlerD3D11::Reset()
     {
+        m_pTexture.Reset();
+        m_pCursorTexture.Reset();
+        m_pTextureView.Reset();
+        m_pDevice.Reset();
+        m_pContext.Reset();
+        m_pImmediateContext.Reset();
+
+        m_pSpriteBatch = nullptr;
+        m_pStates = nullptr;
+
         Create();
     }
 
@@ -97,7 +107,7 @@ namespace TiltedPhoques
             DirectX::CreateDDSTextureFromFile(m_pDevice.Get(), m_pParent->GetCursorPathDDS().c_str(), nullptr, m_pCursorTexture.ReleaseAndGetAddressOf());
         }
 
-        std::unique_lock<std::mutex> _(m_textureLock);
+        std::unique_lock _(m_textureLock);
 
         if (!m_pTexture)
             CreateRenderTexture();
@@ -115,7 +125,7 @@ namespace TiltedPhoques
     {
         if (type == PET_VIEW && m_width == width && m_height == height)
         {
-            std::unique_lock<std::mutex> _(m_textureLock);
+            std::unique_lock _(m_textureLock);
 
             if (!m_pTexture)
                 CreateRenderTexture();
