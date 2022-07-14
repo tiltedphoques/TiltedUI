@@ -17,6 +17,7 @@ namespace TiltedPhoques
     {
         // So we need to lock this until we have the window dimension as a background CEF thread will attempt to get it before we have it
         m_createLock.lock();
+        m_isCreateLockLocked = true;
     }
 
     OverlayRenderHandlerD3D11::~OverlayRenderHandlerD3D11() = default;
@@ -130,6 +131,10 @@ namespace TiltedPhoques
             if (!m_pTexture)
                 CreateRenderTexture();
 
+            // OnPaint may be called before context initialization
+            if (!m_pContext)
+                return;
+
             D3D11_MAPPED_SUBRESOURCE mappedResource;
             const auto result = m_pContext->Map(m_pTexture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
@@ -173,7 +178,11 @@ namespace TiltedPhoques
                     m_height = desc.Height;
 
                     // We now know the size of the viewport, we can let CEF get it
-                    m_createLock.unlock();
+                    if (m_isCreateLockLocked)
+                    {
+                        m_createLock.unlock();
+                        m_isCreateLockLocked = false;
+                    }
 
                     {
                         std::unique_lock<std::mutex> _(m_textureLock);
