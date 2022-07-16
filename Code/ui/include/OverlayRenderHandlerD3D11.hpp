@@ -59,6 +59,7 @@ namespace TiltedPhoques
         Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pTextureView;
         std::mutex m_textureLock;
         std::mutex m_createLock;
+        bool m_isCreateLockLocked = false;
         Renderer* m_pRenderer;
 
         Microsoft::WRL::ComPtr<ID3D11Device> m_pDevice;
