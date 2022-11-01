@@ -141,7 +141,6 @@ namespace TiltedPhoques
             if (SUCCEEDED(result))
             {
                 const auto pDest = static_cast<uint8_t*>(mappedResource.pData);
-                //std::memcpy(pDest, buffer, width * height * 4);
                 for (auto& rect : dirtyRects) {
                     int x = rect.x;
                     int y = rect.y;
