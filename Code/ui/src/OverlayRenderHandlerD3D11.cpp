@@ -138,10 +138,25 @@ namespace TiltedPhoques
             D3D11_MAPPED_SUBRESOURCE mappedResource;
             const auto result = m_pContext->Map(m_pTexture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
-            if(SUCCEEDED(result))
+            if (SUCCEEDED(result))
             {
                 const auto pDest = static_cast<uint8_t*>(mappedResource.pData);
-                std::memcpy(pDest, buffer, width * height * 4);
+                //std::memcpy(pDest, buffer, width * height * 4);
+                for (auto& rect : dirtyRects) {
+                    int x = rect.x;
+                    int y = rect.y;
+                    int w = rect.width;
+                    int h = rect.height;
+                    int srcStride = width * 4;
+                    int dstStride = mappedResource.RowPitch;
+                    const uint8_t* src = static_cast<const uint8_t*>(buffer) + y * srcStride + x * 4;
+                    uint8_t* dst = pDest + y * dstStride + x * 4;
+                    for (int i = 0; i < h; i++) {
+                        std::memcpy(dst, src, w * 4);
+                        src += srcStride;
+                        dst += dstStride;
+                    }
+                }
                 m_pContext->Unmap(m_pTexture.Get(), 0);
             }
             else
