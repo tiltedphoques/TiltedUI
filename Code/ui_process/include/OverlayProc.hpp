@@ -6,14 +6,14 @@
 
 namespace TiltedPhoques
 {
-    struct OverlayApp final : CefApp
+    struct OverlayProc final : CefApp
     {
-        explicit OverlayApp(const std::function<OverlayRenderProcessHandler* ()>& aFactory) noexcept;
-        ~OverlayApp() = default;
+        explicit OverlayProc(const std::function<OverlayRenderProcessHandler* ()>& aFactory) noexcept;
+        ~OverlayProc() = default;
 
         CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override;
 
-        IMPLEMENT_REFCOUNTING(OverlayApp);
+        IMPLEMENT_REFCOUNTING(OverlayProc);
 
     private:
 
