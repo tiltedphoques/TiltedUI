@@ -2,11 +2,11 @@ set_languages("cxx17")
 set_xmakever("2.5.1")
 
 add_requires(
-    "tiltedcore",
+    "tiltedcore v0.2.7",
     "catch2 2.13.9",
-    "directxtk",
-    "cef",
-    "hopscotch-map")
+    "directxtk 21.11.0",
+    "cef 100.0.24",
+    "hopscotch-map v2.3.1")
 
 add_rules("mode.debug","mode.releasedbg", "mode.release")
 add_rules("plugin.vsxmake.autoupdate")
@@ -31,6 +31,7 @@ target("TiltedUi")
         "directxtk",
         "mimalloc",
         "hopscotch-map")
+    add_defines("NOMINMAX")
 
 target("UiProcess")
     set_kind("static")
@@ -43,6 +44,7 @@ target("UiProcess")
         "cef",
         "mimalloc",
         "hopscotch-map")
+    add_defines("NOMINMAX")
 
 --target("TiltedUi_Tests")
 --    set_kind("binary")
