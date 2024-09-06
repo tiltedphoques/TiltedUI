@@ -1,12 +1,18 @@
 set_languages("cxx17")
 set_xmakever("2.5.1")
 
+-- direct dependencies version pinning
 add_requires(
     "tiltedcore v0.2.7",
     "catch2 2.13.9",
     "directxtk 21.11.0",
     "cef 100.0.24",
-    "hopscotch-map v2.3.1")
+    "hopscotch-map v2.3.1"
+)
+
+-- dependencies' dependencies version pinning
+add_requireconfs("*.mimalloc", { version = "2.1.7", override = true })
+add_requireconfs("*.cmake", { version = "3.30.2", override = true })
 
 add_rules("mode.debug","mode.releasedbg", "mode.release")
 add_rules("plugin.vsxmake.autoupdate")
