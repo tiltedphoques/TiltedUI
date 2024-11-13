@@ -49,7 +49,7 @@ namespace TiltedPhoques
 
         CefBrowserSettings browserSettings{};
 
-        browserSettings.windowless_frame_rate = 240;
+        browserSettings.windowless_frame_rate = 60;
 
         CefWindowInfo info;
         info.SetAsWindowless(m_pRenderProvider->GetWindow());
