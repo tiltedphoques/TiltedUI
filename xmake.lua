@@ -6,7 +6,7 @@ add_requires(
     "tiltedcore v0.2.7",
     "catch2 2.13.9",
     "directxtk 21.11.0",
-    "cef 100.0.24",
+    "cef 141.0.11",
     "hopscotch-map v2.3.1"
 )
 
