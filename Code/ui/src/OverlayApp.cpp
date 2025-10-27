@@ -1,5 +1,4 @@
 #include <OverlayApp.hpp>
-#include <filesystem>
 #include <iostream>
 #include <TiltedCore/Filesystem.hpp>
 
@@ -15,7 +14,7 @@ namespace TiltedPhoques
 
     }
 
-    bool OverlayApp::Initialize(const std::string& acPath) noexcept
+    bool OverlayApp::Initialize() noexcept
     {
         CefMainArgs args(GetModuleHandleW(nullptr));
 
@@ -34,28 +33,32 @@ namespace TiltedPhoques
         //settings.log_severity = LOGSEVERITY_VERBOSE;
 //#endif
 
+        // Only the first instance will use real CEF cache, extra instances' caches go in
+        // %TEMP% (see `root_cache_path` docs)
+        const std::wstring cachePath = GetCefCachePath(currentPath);
+
         CefString(&settings.log_file).FromWString(currentPath / L"logs" / L"cef_debug.log");
-        CefString(&settings.cache_path).FromWString(currentPath / L"cache");
+        CefString(&settings.root_cache_path).FromWString(cachePath);
+        CefString(&settings.cache_path).FromWString(cachePath);
         CefString(&settings.framework_dir_path).FromWString(currentPath);
-        CefString(&settings.root_cache_path).FromWString(currentPath / L"cache");
         CefString(&settings.resources_dir_path).FromWString(currentPath);
         CefString(&settings.locales_dir_path).FromWString(currentPath / L"locales");
         CefString(&settings.browser_subprocess_path).FromWString(currentPath / m_processName);
 
-        CefInitialize(args, settings, this, nullptr);
+        if (!CefInitialize(args, settings, this, nullptr))
+            return false;
 
         if (!m_pClient)
             m_pClient = new OverlayClient(m_pRenderProvider->Create());
 
         CefBrowserSettings browserSettings{};
-
         browserSettings.windowless_frame_rate = 60;
 
         CefWindowInfo info;
         info.SetAsWindowless(m_pRenderProvider->GetWindow());
 
         const auto ret = CefBrowserHost::CreateBrowser(info, m_pClient.get(),
-            (currentPath / L"UI" / acPath / L"index.html").wstring(), browserSettings, nullptr, nullptr);
+            (currentPath / L"UI" / L"index.html").wstring(), browserSettings, nullptr, nullptr);
 
         return ret;
     }
@@ -152,5 +155,24 @@ namespace TiltedPhoques
     {
         aCommandLine->AppendSwitch("allow-file-access-from-files");
         aCommandLine->AppendSwitch("allow-universal-access-from-files");
+    }
+
+    std::wstring OverlayApp::GetCefCachePath(const std::filesystem::path& currentPath) const noexcept
+    {
+        static HANDLE g_tiltedUiMutex = CreateMutexW(0, FALSE, L"TiltedUiAppMutex");
+        if (g_tiltedUiMutex && GetLastError() != ERROR_ALREADY_EXISTS)
+        {
+            return currentPath / L"cache";
+        }
+
+        // 2nd instance's cache will go in "%TEMP%/tiltedui_cef_cache/1", 3rd in "%TEMP%/tiltedui_cef_cache/2", ...
+        uint8_t slot = 1;
+        std::filesystem::path tempCacheDir = std::filesystem::temp_directory_path() / L"tiltedui_cef_cache" / std::to_wstring(slot);
+        while (std::filesystem::exists(tempCacheDir / L"lockfile"))
+        {
+            slot++;
+            tempCacheDir = tempCacheDir.parent_path() / std::to_wstring(slot);
+        }
+        return tempCacheDir;
     }
 }

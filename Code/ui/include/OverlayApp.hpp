@@ -1,5 +1,7 @@
 #pragma once
 
+#include <filesystem>
+
 #include <OverlayBrowserProcessHandler.hpp>
 #include <OverlayClient.hpp>
 
@@ -25,7 +27,7 @@ namespace TiltedPhoques
 
         TP_NOCOPYMOVE(OverlayApp);
 
-        bool Initialize(const std::string& acPath) noexcept;
+        bool Initialize() noexcept;
         void Shutdown() noexcept;
 
         void ExecuteAsync(const std::string& acFunction, const CefRefPtr<CefListValue>& apArguments = nullptr) const noexcept;
@@ -44,6 +46,7 @@ namespace TiltedPhoques
         IMPLEMENT_REFCOUNTING(OverlayApp);
 
     private:
+        std::wstring GetCefCachePath(const std::filesystem::path& currentPath) const noexcept;
 
         CefRefPtr<OverlayBrowserProcessHandler> m_pBrowserProcessHandler;
         CefRefPtr<OverlayClient> m_pClient;

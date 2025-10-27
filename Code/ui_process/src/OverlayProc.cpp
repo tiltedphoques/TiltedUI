@@ -17,7 +17,7 @@ namespace TiltedPhoques
     void ExitCheck(CefRefPtr<CefCommandLine> apArgs)
     {
         const auto pid = apArgs->GetSwitchValue("pid");
-        const DWORD parentId = std::stoul(pid.c_str());
+        const DWORD parentId = std::stoul(pid.ToString());
 
         Sleep(5000);
 
