@@ -85,14 +85,10 @@ namespace TiltedPhoques
 
     void OverlayRenderHandlerD3D11::Create()
     {
-        const auto hr = m_pRenderer->GetSwapChain()->GetDevice(IID_ID3D11Device, reinterpret_cast<void**>(m_pDevice.ReleaseAndGetAddressOf()));
+        m_pDevice = m_pRenderer->GetDevice();
+        m_pImmediateContext = m_pRenderer->GetDeviceContext();
 
-        if (FAILED(hr))
-            return;
-
-        m_pDevice->GetImmediateContext(m_pImmediateContext.ReleaseAndGetAddressOf());
-
-        if (!m_pImmediateContext)
+        if (!m_pImmediateContext || !m_pDevice)
             return;
 
         GetRenderTargetSize();
