@@ -27,6 +27,8 @@ namespace TiltedPhoques
             Renderer() = default;
             virtual ~Renderer() = default;
             [[nodiscard]] virtual IDXGISwapChain* GetSwapChain() const noexcept = 0;
+            [[nodiscard]] virtual ID3D11Device* GetDevice() const noexcept = 0;
+            [[nodiscard]] virtual ID3D11DeviceContext* GetDeviceContext() const noexcept = 0;
 
             TP_NOCOPYMOVE(Renderer);
         };
