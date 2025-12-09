@@ -3,7 +3,7 @@ set_xmakever("2.5.1")
 
 -- direct dependencies version pinning
 add_requires(
-    "tiltedcore v0.2.7",
+    "tiltedcore",
     "catch2 2.13.9",
     "directxtk 21.11.0",
     "cef 141.0.11",
