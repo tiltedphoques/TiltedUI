@@ -155,6 +155,8 @@ namespace TiltedPhoques
     {
         aCommandLine->AppendSwitch("allow-file-access-from-files");
         aCommandLine->AppendSwitch("allow-universal-access-from-files");
+        // Stop Chromium de-elevating by relaunching the spoofed SkyrimSE.exe, which starts vanilla Skyrim
+        aCommandLine->AppendSwitch("do-not-de-elevate");
     }
 
     std::wstring OverlayApp::GetCefCachePath(const std::filesystem::path& currentPath) const noexcept
