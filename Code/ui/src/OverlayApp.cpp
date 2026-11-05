@@ -157,12 +157,6 @@ namespace TiltedPhoques
         aCommandLine->AppendSwitch("allow-universal-access-from-files");
         // Stop Chromium de-elevating by relaunching the spoofed SkyrimSE.exe, which starts vanilla Skyrim
         aCommandLine->AppendSwitch("do-not-de-elevate");
-        // Draw the UI on the CPU. On the GPU, CEF copies every frame back to memory for OnPaint, and that work waits
-        // behind the game's frames when the game keeps the GPU busy: CEF drops UI frames ("Client rejects proposal
-        // to capture frame" in cef_debug.log) and the UI shows up half drawn. The UI is plain HTML and CSS, so
-        // drawing it on the CPU is cheap.
-        aCommandLine->AppendSwitch("disable-gpu");
-        aCommandLine->AppendSwitch("disable-gpu-compositing");
     }
 
     std::wstring OverlayApp::GetCefCachePath(const std::filesystem::path& currentPath) const noexcept

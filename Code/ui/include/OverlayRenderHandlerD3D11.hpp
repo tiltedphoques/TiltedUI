@@ -22,9 +22,7 @@ struct ID3D11Device;
 
 namespace TiltedPhoques
 {
-    // CEF paints are merged into a CPU copy of the view on CEF's thread, and the render thread uploads only the
-    // repainted area, at most once per frame. Uploading the whole view on every paint is about 30 MB at 5120x1440,
-    // and several paints pile up per frame when the game runs below the UI's 60 fps.
+    // CEF paints go into a CPU copy of the view; the render thread uploads only the repainted area, once per frame
     struct OverlayRenderHandlerD3D11 : OverlayRenderHandler
     {
         struct Renderer
@@ -54,7 +52,7 @@ namespace TiltedPhoques
 
     protected:
 
-        void GetRenderTargetSize();
+        void UpdateViewSize();
         void CreateRenderTexture();
 
     private:

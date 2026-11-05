@@ -44,7 +44,7 @@ namespace TiltedPhoques
                 return;
         }
 
-        GetRenderTargetSize();
+        UpdateViewSize();
 
         if (!m_pTexture)
             CreateRenderTexture();
@@ -94,7 +94,7 @@ namespace TiltedPhoques
         if (!m_pImmediateContext || !m_pDevice)
             return;
 
-        GetRenderTargetSize();
+        UpdateViewSize();
 
         m_pSpriteBatch = std::make_unique<DirectX::SpriteBatch>(m_pImmediateContext.Get());
         m_pStates = std::make_unique<DirectX::CommonStates>(m_pDevice.Get());
@@ -134,6 +134,8 @@ namespace TiltedPhoques
             m_pixelHeight = static_cast<uint32_t>(height);
 
             std::memcpy(m_pixels.data(), pSource, m_pixels.size());
+            // Drop the dirty area of the old size, it can be larger than the new view
+            m_hasDirtyPixels = false;
             AddDirtyRect(0, 0, m_pixelWidth, m_pixelHeight);
             return;
         }
@@ -163,9 +165,7 @@ namespace TiltedPhoques
 
     bool OverlayRenderHandlerD3D11::GetScreenSize(uint32_t& aWidth, uint32_t& aHeight) const noexcept
     {
-        // The back buffer has the size of the window's client area, which mouse coordinates are relative to.
-        // The render target bound when the UI is drawn is not always the back buffer: while the game loads it
-        // can be a 512x512 texture, and sizing the view after it made CEF lay out and repaint the whole UI twice.
+        // Prefer the back buffer: the bound render target can be a 512x512 texture while the game loads
         IDXGISwapChain* pSwapChain = m_pRenderer->GetSwapChain();
         DXGI_SWAP_CHAIN_DESC swapChainDesc{};
 
@@ -198,7 +198,7 @@ namespace TiltedPhoques
         return aWidth > 0 && aHeight > 0;
     }
 
-    void OverlayRenderHandlerD3D11::GetRenderTargetSize()
+    void OverlayRenderHandlerD3D11::UpdateViewSize()
     {
         uint32_t width = 0;
         uint32_t height = 0;
@@ -235,8 +235,7 @@ namespace TiltedPhoques
         if (!m_pDevice || width == 0 || height == 0)
             return;
 
-        // Default usage: the texture is only written with UpdateSubresource(), which keeps the pixels
-        // outside the updated box, unlike mapping a dynamic texture with D3D11_MAP_WRITE_DISCARD
+        // Default usage, so UpdateSubresource() keeps the pixels outside the updated box
         D3D11_TEXTURE2D_DESC textDesc;
         textDesc.Width = width;
         textDesc.Height = height;
@@ -285,13 +284,20 @@ namespace TiltedPhoques
         if (!m_hasDirtyPixels || m_pixelWidth != m_textureWidth || m_pixelHeight != m_textureHeight)
             return;
 
+        m_hasDirtyPixels = false;
+
+        const uint32_t right = std::min(m_dirtyRight, m_pixelWidth);
+        const uint32_t bottom = std::min(m_dirtyBottom, m_pixelHeight);
+
+        if (m_dirtyLeft >= right || m_dirtyTop >= bottom)
+            return;
+
         const uint32_t rowSize = m_pixelWidth * cBytesPerPixel;
         const uint8_t* pSource = m_pixels.data() + static_cast<size_t>(m_dirtyTop) * rowSize + static_cast<size_t>(m_dirtyLeft) * cBytesPerPixel;
-        const D3D11_BOX box{ m_dirtyLeft, m_dirtyTop, 0, m_dirtyRight, m_dirtyBottom, 1 };
+        const D3D11_BOX box{ m_dirtyLeft, m_dirtyTop, 0, right, bottom, 1 };
 
         m_pImmediateContext->UpdateSubresource(m_pTexture.Get(), 0, &box, pSource, rowSize, 0);
 
-        m_hasDirtyPixels = false;
         m_hasTextureContent = true;
     }
 
